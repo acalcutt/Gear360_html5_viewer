@@ -25,6 +25,7 @@ var theta_view = function (video_id) {
 	texture.format = THREE.RGBFormat;
 
 	var geometry = new THREE.SphereGeometry(100, 32, 32, 0);
+	geometry.scale(-1, 1, 1);
 
         var faceVertexUvs = geometry.faceVertexUvs[ 0 ];
         for ( i = 0; i < faceVertexUvs.length; i ++ ) {
@@ -37,17 +38,16 @@ var theta_view = function (video_id) {
 
 			if (i < faceVertexUvs.length / 2) {
 				var correction = (x == 0 && z == 0) ? 1 : (Math.acos(y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
-                                uvs[ j ].x = -1 * x * (404 / 1920) * correction + (447 / 1920);
+                                uvs[ j ].x = x * (404 / 1920) * correction + (447 / 1920);
                                 uvs[ j ].y = z * (404 / 1080) * correction + (582 / 1080);
                         } else {
 				var correction = ( x == 0 && z == 0) ? 1 : (Math.acos(-y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
-                                uvs[ j ].x = x * (404 / 1920) * correction + (1460 / 1920);
+                                uvs[ j ].x = -1 * x * (404 / 1920) * correction + (1460 / 1920);
                                 uvs[ j ].y = z * (404 / 1080) * correction + (582 / 1080);
                         }
                 }
         }
 
-	geometry.scale(-1, 1, 1);
         geometry.rotateZ(-Math.PI / 2);
 	var material = new THREE.MeshBasicMaterial( { map: texture } );
 	var mesh = new THREE.Mesh( geometry, material );
