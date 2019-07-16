@@ -1,17 +1,24 @@
 <html>
 <head>
 	<meta charset="utf-8">
+    <style type="text/css">
+      .videocanvas {
+     position: absolute; 
+     width: 100%; 
+     height: 100%; 
+     overflow: hidden
+      }
+    </style>
 </head>
-<body>
-	<video controls preload="auto" id="video" width="100%" height="100">
+<body scroll="no" style="overflow: hidden">
+	<video autoplay controls preload="auto" id="video" width="100%" height="100">
 		<source src="test.mp4" type="video/mp4">
 	</video>
 	<br />
-	<script src="three.min.js"></script>
-	<script src="OrbitControls.js"></script>
-	<script src="theta-view.js"></script>
-	<script>
-		window.addEventListener( 'DOMContentLoaded', theta_view('video'), false );
-	</script>
+	<div class="videocanvas">
+		<canvas id="v1" class="videocanvas"></canvas>
+	</div>
+	<script  type="module" src="theta-view3.js"></script>
 </body>
 </html>
+
