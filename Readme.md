@@ -5,9 +5,10 @@
 [English translated source](https://community.theta360.guide/t/displaying-thetas-dual-fisheye-video-with-three-js/1160)  
 [three.js webgl - equirectangular panorama example](https://threejs.org/examples/webgl_panorama_equirectangular.html)  
 
-### Code Explanation
+### Code Explanation, from the English translated source
 Overview
-Referencing Completely Understandable WebGL Programming Even for Beginners, Taking the First Step with Three.js 21 I implemented three.js.
+Referencing Completely Understandable WebGL Programming Even for Beginners, Taking the First Step with Three.js [WebGL Programming Even for Beginners, Taking the First Step with Three.js](https://html5experts.jp/yomotsu/5225/) I implemented three.js.
+
 
 The configuration is as follows.
 
