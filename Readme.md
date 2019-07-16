@@ -39,10 +39,13 @@ However, it is a rough value because it does not measure exactly.
 ![alt text](https://github.com/acalcutt/Gear360_html5_viewer/raw/master/doc/Arrangement.jpg "Arrangement of Dualfisheye")
 
 The base code refers to this code in the answer to the following question.
-Javascript - Mapping image onto a sphere in Three.js - Stack Overflow 37
+[Javascript - Mapping image onto a sphere in Three.js - Stack Overflow](https://stackoverflow.com/questions/21663923/mapping-image-onto-a-sphere-in-three-js)
 
+```
 faceVertexUvs[ face ][ j ].x = face.vertexNormals[ j ].x * 0.5 + 0.5;
 faceVertexUvs[ face ][ j ].y = face.vertexNormals[ j ].y * 0.5 + 0.5;
+```
+
 However, if you keep the above code, the image will be distorted.
 
 ![alt text](https://github.com/acalcutt/Gear360_html5_viewer/raw/master/doc/calculation_orig.png "Calcuiation Origional")
