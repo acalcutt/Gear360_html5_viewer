@@ -1,8 +1,9 @@
-## Gear 360 html5 viewer (based on RICOH THETA Dualfisheye three.js)
+## Gear 360 html5 viewer (based on RICOH THETA Dualfisheye three.js and three.js panorama equirectangular example)
 
 ### References
 [Origional Japanese Source](http://qiita.com/mechamogera/items/b6eb59912748bbbd7e5d)
 [English translated source](https://community.theta360.guide/t/displaying-thetas-dual-fisheye-video-with-three-js/1160)
+[three.js webgl - equirectangular panorama example](https://threejs.org/examples/webgl_panorama_equirectangular.html)
 
 
 ### Code Explanation
@@ -21,6 +22,7 @@ I created a sphere, placed the camera inside, pasted and pasted a video texture 
 Paste the Texture
 In theta-view.js the following part sets the UV.
 
+```
 if (i < faceVertexUvs.length / 2) {
   var correction = (x == 0 && z == 0) ? 1 : (Math.acos(y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
   uvs[ j ].x = x * (404 / 1920) * correction + (447 / 1920);
@@ -30,6 +32,7 @@ if (i < faceVertexUvs.length / 2) {
   uvs[ j ].x = -1 * x * (404 / 1920) * correction + (1460 / 1920);
   uvs[ j ].y = z * (404 / 1080) * correction + (582 / 1080);
 }
+```
 Magic numbers of 404 and 447 correspond to the following sizes.
 However, it is a rough value because it does not measure exactly.
 
