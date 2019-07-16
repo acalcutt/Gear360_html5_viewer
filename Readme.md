@@ -1,11 +1,11 @@
-##Gear 360 html5 viewer (based on RICOH THETA Dualfisheye three.js)
+## Gear 360 html5 viewer (based on RICOH THETA Dualfisheye three.js)
 
-###References
+### References
 [Origional Japanese Source](http://qiita.com/mechamogera/items/b6eb59912748bbbd7e5d)
 [English translated source](https://community.theta360.guide/t/displaying-thetas-dual-fisheye-video-with-three-js/1160)
 
 
-###Code Explanation
+### Code Explanation
 Overview
 Referencing Completely Understandable WebGL Programming Even for Beginners, Taking the First Step with Three.js 21 I implemented three.js.
 
