@@ -1,8 +1,11 @@
 import * as THREE from '/three.module.js';
 var camera, scene, renderer;
 
-var canvas = document.getElementById("v1");
+var container = document.getElementById( 'container' );
 var video = document.getElementById("video" );
+
+var width = $("#content").width();
+var height = $("#content").height();
 
 var isUserInteracting = false,
 onMouseDownMouseX = 0, onMouseDownMouseY = 0,
@@ -15,10 +18,9 @@ renderLoop();
 
 function init() {
 	var mesh, i;
-	
+
 	scene = new THREE.Scene();
-	var width  = canvas.clientWidth;
-	var height = canvas.clientHeight - 100;
+
 	var fov    = 75;
 	var aspect = width / height;
 	var near   = 1;
@@ -26,12 +28,10 @@ function init() {
 	camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
 	camera.target = new THREE.Vector3( 0, 0, 0 );
 
-	renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true});
+	renderer = new THREE.WebGLRenderer();
 	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.setSize( width, height );
-
-	var element = renderer.domElement;
-	document.body.appendChild( element );
+	renderer.setSize( width, height);
+	container.appendChild( renderer.domElement );
 	
 	var texture = new THREE.VideoTexture( video );
 	texture.minFilter = THREE.LinearFilter;
@@ -41,27 +41,26 @@ function init() {
 	var geometry = new THREE.SphereGeometry(100, 32, 32, 0);
 	geometry.scale(-1, 1, 1);
 
-  var faceVertexUvs = geometry.faceVertexUvs[ 0 ];
-  for ( i = 0; i < faceVertexUvs.length; i++ ) {
-    var uvs = faceVertexUvs[ i ];
-    var face = geometry.faces[ i ];
-    for ( var j = 0; j < 3; j ++ ) {
-      var x = face.vertexNormals[ j ].x;
-	    var y = face.vertexNormals[ j ].y;
-	    var z = face.vertexNormals[ j ].z;
+	var faceVertexUvs = geometry.faceVertexUvs[ 0 ];
+	for ( i = 0; i < faceVertexUvs.length; i++ ) {
+		var uvs = faceVertexUvs[ i ];
+		var face = geometry.faces[ i ];
+		for ( var j = 0; j < 3; j ++ ) {
+			var x = face.vertexNormals[ j ].x;
+			var y = face.vertexNormals[ j ].y;
+			var z = face.vertexNormals[ j ].z;
 
-      if (i < faceVertexUvs.length / 2) {
-        var correction = (x == 0 && z == 0) ? 1 : (Math.acos(y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
-        uvs[ j ].x = x * (443 / 1920) * correction + (480 / 1920);
-        uvs[ j ].y = z * (443 / 1080) * correction + (600 / 1080);
-
-      } else {
-        var correction = ( x == 0 && z == 0) ? 1 : (Math.acos(-y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
-        uvs[ j ].x = -1 * x * (443 / 1920) * correction + (1440 / 1920);
-        uvs[ j ].y = z * (443 / 1080) * correction + (600 / 1080);
-      }
-    }
-  }
+			if (i < faceVertexUvs.length / 2) {
+				var correction = (x == 0 && z == 0) ? 1 : (Math.acos(y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
+				uvs[ j ].x = x * (443 / 1920) * correction + (480 / 1920);
+				uvs[ j ].y = z * (443 / 1080) * correction + (600 / 1080);
+			} else {
+				var correction = ( x == 0 && z == 0) ? 1 : (Math.acos(-y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
+				uvs[ j ].x = -1 * x * (443 / 1920) * correction + (1440 / 1920);
+				uvs[ j ].y = z * (443 / 1080) * correction + (600 / 1080);
+			}
+		}
+	}
 
     geometry.rotateZ(90 * Math.PI / 180);//radians
 	geometry.rotateX(270 * Math.PI / 180);
@@ -125,14 +124,10 @@ function init() {
 }
 
 function onWindowResize() {
-
-	canvas.style.width = '100%';
-	canvas.style.height = '100%';
-	var width  = canvas.clientWidth;
-	var height = canvas.clientHeight - 100;
-	camera.aspect = width / height;
+	width = $("#content").width();
+	height = $("#content").height();
+	camera.aspect = width/height;
 	camera.updateProjectionMatrix();
-
 	renderer.setSize( width, height );
 }
 
