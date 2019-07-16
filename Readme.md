@@ -1,10 +1,9 @@
 ## Gear 360 html5 viewer (based on RICOH THETA Dualfisheye three.js and three.js panorama equirectangular example)
 
 ### References
-[Origional Japanese Source](http://qiita.com/mechamogera/items/b6eb59912748bbbd7e5d)
-[English translated source](https://community.theta360.guide/t/displaying-thetas-dual-fisheye-video-with-three-js/1160)
-[three.js webgl - equirectangular panorama example](https://threejs.org/examples/webgl_panorama_equirectangular.html)
-
+[Origional Japanese Source](http://qiita.com/mechamogera/items/b6eb59912748bbbd7e5d)  
+[English translated source](https://community.theta360.guide/t/displaying-thetas-dual-fisheye-video-with-three-js/1160)  
+[three.js webgl - equirectangular panorama example](https://threejs.org/examples/webgl_panorama_equirectangular.html)  
 
 ### Code Explanation
 Overview
