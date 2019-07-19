@@ -2,6 +2,10 @@
 <head>
 	<meta charset="utf-8">
     <style type="text/css">
+	video {
+		width: 100%;
+		height: 100px;
+	}
 	.header {
 		text-align: center;
 		height: 100px;
@@ -41,20 +45,34 @@
 	  flex: 0 1 40px;
 	}
     </style>
+	<script src="dash.all.debug.js"></script>
 </head>
 <body>
 
 
 <div class="box">
   <div class="header">
-	<video autoplay controls preload="auto" id="video" width="100%" height="100">
-		<source src="test.mp4" type="video/mp4">
+	<video id="video" controls autoplay>
+		<source src="video/360_0061_1280x720_2000k_dashinit.mp4" type="video/mp4">
+	</video>
 	</video>
   </div>
   <div id="content" class="content">
 	<div id="container"></div>
 	<script src="jquery-3.4.1.min.js"></script>
 	<script  type="module" src="theta-view.js"></script>
+
+	<script>
+		(function(){
+			var url = "video/manifest.mpd";
+			var player = dashjs.MediaPlayer().create();
+			player.initialize(document.querySelector("#video"), url, true);
+			player.setLimitBitrateByPortal(false);
+			player.setInitialBitrateFor('video',8000);
+			player.setAutoPlay(true)
+
+		})();
+	</script>
   </div>
 </div>
 
