@@ -52,12 +52,13 @@ function init() {
 
 			if (i < faceVertexUvs.length / 2) {
 				var correction = (x == 0 && z == 0) ? 1 : (Math.acos(y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
-				uvs[ j ].x = x * (443 / 1920) * correction + (480 / 1920);
-				uvs[ j ].y = z * (443 / 1080) * correction + (600 / 1080);
-			} else {
+				uvs[ j ].x = x * (444 / 1920) * correction + (480 / 1920);
+				uvs[ j ].y = z * (444 / 1080) * correction + (600 / 1080);
+
+			  } else {
 				var correction = ( x == 0 && z == 0) ? 1 : (Math.acos(-y) / Math.sqrt(x * x + z * z)) * (2 / Math.PI);
-				uvs[ j ].x = -1 * x * (443 / 1920) * correction + (1440 / 1920);
-				uvs[ j ].y = z * (443 / 1080) * correction + (600 / 1080);
+				uvs[ j ].x = -1 * x * (444 / 1920) * correction + (1440 / 1920);
+				uvs[ j ].y = z * (444 / 1080) * correction + (600 / 1080);
 			}
 		}
 	}
