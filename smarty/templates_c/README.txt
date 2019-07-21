@@ -1,0 +1,1 @@
+this directory needs to be writeable by smarty
