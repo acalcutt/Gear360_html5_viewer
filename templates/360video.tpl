@@ -9,7 +9,11 @@
 			<title>play</title>
 			<path d="M3 2l10 6-10 6z"></path>
 		</svg>
-		</button> <button class="player-btn" data-skip="-10" id='player-btn-backward'>« 10s</button> <button class="player-btn" data-skip="10" id='player-btn-forward'>10s »</button> <span class="inline nowrap player-btn">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"></span> <span class="inline nowrap player-btn">Playback Rate: <input id='playbackRate' max="3" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span> <span class="inline nowrap player-btn">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
+		</button> 
+		<span class="inline nowrap player-btn"><button class="player-btn" data-skip="-10" id='player-btn-backward'>« 10s </button><button class="player-btn" data-skip="10" id='player-btn-forward' >10s »</button></span>
+		<span class="inline nowrap player-btn">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"></span>
+		<span class="inline nowrap player-btn">Playback Rate: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span>
+		<span class="inline nowrap player-btn">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
 	</div>
 </div>
 {include file="menu.tpl"}
@@ -21,12 +25,17 @@
 	</script> 
 	<script>
 	       (function(){
-	           var url = "{$video_dash}";
-	           var player = dashjs.MediaPlayer().create();
-	           player.initialize(document.querySelector("#video"), url, true);
-	           player.setLimitBitrateByPortal(false);
-	           player.setInitialBitrateFor('video',8000);
-	           player.setAutoPlay(true);
+				var url = "{$video_dash}";
+				var player = dashjs.MediaPlayer().create();
+				player.initialize(document.querySelector("#video"), url, true);
+				player.on("streamInitialized", function () {
+					var bitrates = player.getBitrateInfoListFor("video"),	// bitrates are sorted from lowest to the best values so the last one has the best quality
+					midQuality = bitrates[Math.round(bitrates.length / 2)].qualityIndex; // set middle quality
+					player.setQualityFor("video", midQuality);
+					console.log('Bitrates available:' + bitrates.length);
+					console.log('midQuality:' + midQuality);
+				});
+				player.setAutoPlay(true);
 
 	       })();
 	</script> 
@@ -48,9 +57,9 @@
 	   function updateButton() {
 	     const togglePlayBtn = document.getElementById('toggle-play');
 	     if(this.paused) {
-	       togglePlayBtn.innerHTML = `<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play<\/title><path d="M3 2l10 6-10 6z"><\/path><\/svg>`;
+	       togglePlayBtn.innerHTML = '<svg class="" width="16" height="16" viewBox="0 0 16 16"><title>play<\/title><path d="M3 2l10 6-10 6z"><\/path><\/svg>';
 	     } else {
-	       togglePlayBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><title>pause<\/title><path d="M2 2h5v12H2zm7 0h5v12H9z"><\/path><\/svg>`;
+	       togglePlayBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><title>pause<\/title><path d="M2 2h5v12H2zm7 0h5v12H9z"><\/path><\/svg>';
 	     }
 	   }
 
