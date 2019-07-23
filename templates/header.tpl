@@ -44,152 +44,64 @@
 	       overflow: hidden;
 	   }
 	   
-	   .vidcontrols.active {
-	       left: 0;
-	   }
+		.vidcontrols.active {
+			left: 0;
+		}
 	   
-	   .menu {
-	       position: absolute;
-	       top: 0;
-	       bottom: 0;
-	       width: 300px;
-		   overflow: scroll;
-	   }
-	   
-	   .menu.active {
-	       width: 0px;
-	       transform: rotateY(90deg);
-	   }
+		.menu {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			width: 300px;
+			overflow: scroll;
+		}
 
-	   .content {
-	       position: absolute;
-	       top: 0;
-	       bottom: 100px;
-	       left: 300px;
-	       right: 0;
-	       overflow: hidden;
-	   }
-	   
-	   .content.active {
-	       left: 0;
-	   }
+		.menu.active {
+			left: -350px;
+			width: 300px;
+		}
 
-	   .footer {
-	     flex: 0 1 40px;
-	   }
+		.content {
+			position: absolute;
+			top: 0;
+			bottom: 100px;
+			left: 300px;
+			right: 0;
+			overflow: hidden;
+		}
+
+		.content.active {
+			left: 0;
+		}
 	   
-	   .nowrap {
+		.nowrap {
 	       white-space: nowrap;
-	   }
+		}
 
-	   .player-btn {
-	     background: none;
-	     border: 0;
-	     color: white;
-	     text-align: center;
-	     max-width: 60px;
-	     padding: 5px 8px;
+		.player-btn {
+			background: none;
+			border: 0;
+			color: white;
+			text-align: center;
+			max-width: 60px;
+			padding: 5px 8px;
 
-	     svg {
-	       fill: #FFFFFF;
-	     }
+			svg {
+			fill: #FFFFFF;
+			}
 
-	     &:hover,
-	     &:focus {
-	       border-color: $accent-color;
-	       background: rgba(255, 255, 255, .2);
-	     }
-	   }
-
-	   .player-slider {
-	     width: 10px;
-	     height: 30px;
-	   }
-
-
-	   progress[value] {
-	     -webkit-appearance: none;
-	     appearance: none;
-	     background-color: white;
-	     color: blue;
-	     height: 5px;
-	   }
+			&:hover,
+			&:focus {
+			border-color: $accent-color;
+			background: rgba(255, 255, 255, .2);
+			}
+		}
 	   
-	   progress[value]::-webkit-progress-bar {
-	     background-color: white;
-	     border-radius: 2px;
-	     border: 1px solid lighten(#acacac, 20%);
-	     color: blue;
-	   }
-	   
-	   progress::-webkit-progress-value {
-	     background-color: blue;
-	   }
-
-	   .sliders {
-	     max-width: 200px;
-	     display: flex;
-	   }
-
-	   input[type=range] {
-	     -webkit-appearance: none;
-	     background: transparent;
-	     width: 100%;
-	     margin: 0 5px;
-	   }
-
-	   input[type=range]:focus {
-	     outline: none;
-	   }
-
-	   input[type=range]::-webkit-slider-runnable-track {
-	     width: 100%;
-	     height: 8px;
-	     cursor: pointer;
-	     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0 0 1px rgba(13, 13, 13, 0);
-	     background: rgba(255, 255, 255, 0.5);
-	     border-radius: 10px;
-	     border: 0.2px solid rgba(1, 1, 1, 0);
-	   }
-
-	   input[type=range]::-webkit-slider-thumb {
-	     height: 15px;
-	     width: 15px;
-	     border-radius: 50px;
-	     background: white;
-	     cursor: pointer;
-	     -webkit-appearance: none;
-	     margin-top: -3.5px;
-	     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-	   }
-
-	   input[type=range]:focus::-webkit-slider-runnable-track {
-	     background: rgba(255, 255, 255, 0.8);
-	   }
-
-	   input[type=range]::-moz-range-track {
-	     width: 100%;
-	     height: 8px;
-	     cursor: pointer;
-	     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0), 0 0 1px rgba(13, 13, 13, 0);
-	     background: #ffffff;
-	     border-radius: 10px;
-	     border: 0.2px solid rgba(1, 1, 1, 0);
-	   }
-
-	   input[type=range]::-moz-range-thumb {
-	     box-shadow: 0 0 3px rgba(0, 0, 0, 0), 0 0 1px rgba(13, 13, 13, 0);
-	     height: 15px;
-	     width: 15px;
-	     border-radius: 50px;
-	     background: white;
-	     cursor: pointer;
-	   }
-	   
-	.php-file-tree {
-	   font-size: 15px;
-	   line-height: 1.5;
-	}
+		.php-file-tree {
+		   font-size: 15px;
+		   line-height: 1.5;
+		}
 
 	   .php-file-tree A {
 	       color: #000000;
@@ -279,19 +191,6 @@
 	   transform: translateY(0.35em) translateX(-0.65em) rotate(45deg) scaleX(0.6);
 	}
 
-	.wrapper {
-	 margin-left: auto;
-	 padding: 8px 16px;
-	 border: none;
-	 background: #d0dce7;
-	 color: #000000;
-	 border-radius: 2px;
-	 list-style-type: none;
-	}
-	.form-row {
-	display: flex;
-	justify-content: flex-end;
-	}
 	/* ---------------------------------------------------
 	   MEDIAQUERIES
 	----------------------------------------------------- */
@@ -306,12 +205,13 @@
 	   }
 	   
 	   .menu {
-	       width: 0px;
-	       transform: rotateY(90deg);
+			left: -350px;
+			width: 300px;
 	   }
 	   
 	   .menu.active {
-	       width: 300px;
+			left: 0;
+			width: 300px;
 	   }
 
 	   .content {
