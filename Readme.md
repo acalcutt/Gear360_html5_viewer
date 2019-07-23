@@ -1,8 +1,10 @@
 ## Gear 360 html5 viewer (based on RICOH THETA Dualfisheye three.js and three.js panorama equirectangular example)
 
 ## Notes
+- Script to convert Gear 360 videos to a dash format is in dash_encode_script\dash_convert_x264.ps1. It expects ffmpeg and mp4box folders to be in the PATH environment variable.
 - Make sure smarty/templates_c is writeable
 - Update website path in config.php
+
 
 ### References
 [Origional Japanese Source](http://qiita.com/mechamogera/items/b6eb59912748bbbd7e5d)  
