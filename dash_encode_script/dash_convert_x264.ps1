@@ -1,10 +1,10 @@
 ﻿$input = Read-Host 'What file do you want to convert?'
-#$input = "Z:\360_0033.MP4"
+#$input = "Z:\360_0053.MP4"
 
 $starttime = ""
 $endtime = ""
-#$starttime = "-ss 14 "
-#$endtime = "-t 00:05:53 "
+#$starttime = "-ss 4 "
+#$endtime = "-t 00:04:48 "
 
 $x264_DASH_PARAMS="-x264opts keyint=24:min-keyint=24:no-scenecut "
 $hwaccel_PARAMS="-hwaccel dxva2 -threads 4 "
@@ -22,10 +22,14 @@ If(Test-Path $input)
 
     $outfile_basename = "$($output_folder)$($basename)"
 
+    #Create Faillback MP4 (x264/AAC), for use when dash is not supported
+
     $outfile0 = "$($output_folder)fallback.mp4"
     $params0 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1280x720 -b:v 2000k $x264_DASH_PARAMS -c:a aac -b:a 128k -f mp4 -dash 1 $outfile0"
     Write-Host "Creating $outfile0 | ffmpeg.exe $params0"
     if (-Not (Test-Path $outfile0)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params0"}
+
+    #Create several different resolutions at different bitrates using ffmpeg
 
     $outfile1 = "$($outfile_basename)_640x360_750k.mp4"
     $params1 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 640x360 -b:v 750k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile1"
@@ -59,12 +63,21 @@ If(Test-Path $input)
 
     $outfile7 = "$($outfile_basename)_audio_128k.mp4"
     $params7 = "-i $input $($starttime)$($endtime)-c:a aac -b:a 128k -vn $outfile7"
-    Write-Host "Creating $outfile7 | $params7"
+    Write-Host "Creating $outfile7 | ffmpeg.exe $params7"
     if (-Not (Test-Path $outfile7)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params7"}
 
+    $thumbnail_name = "$($output_folder)thumbnail.png"
+    $params8 = "$($starttime)-i $input -vframes 1 $thumbnail_name"
+    Write-Host "Creating $thumbnail_name | ffmpeg.exe $params8"
+    if (-Not (Test-Path $thumbnail_name)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params8"}
+
+    #Create the dash manifest file
+
     $manifest_name = "$($output_folder)Play.mpd"
-    $params8 = "-dash 2000 -rap -frag-rap -profile onDemand $outfile1 $outfile2 $outfile3 $outfile4 $outfile5 $outfile6 $outfile7 -out $manifest_name"
-    Write-Host "Creating | MP4Box.exe $manifest_name"
-    if (-Not (Test-Path $manifest_name)) {Start-Process -Wait -FilePath "MP4Box.exe" -ArgumentList "$params8"}
+    $params9 = "-dash 2000 -rap -frag-rap -profile onDemand $outfile1 $outfile2 $outfile3 $outfile4 $outfile5 $outfile6 $outfile7 -out $manifest_name"
+    Write-Host "Creating | MP4Box.exe $params9"
+    if (-Not (Test-Path $manifest_name)) {Start-Process -Wait -FilePath "MP4Box.exe" -ArgumentList "$params9"}
+
+
 }
 Else {"File $input does not exist"}
