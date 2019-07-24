@@ -1,4 +1,5 @@
 ## Gear 360 html5 viewer (based on RICOH THETA Dualfisheye three.js and three.js panorama equirectangular example)
+Origional Base
 
 ### References
 [Origional Japanese Source](http://qiita.com/mechamogera/items/b6eb59912748bbbd7e5d)  
