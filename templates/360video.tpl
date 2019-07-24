@@ -14,6 +14,7 @@
 		<span class="inline nowrap player-btn">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"></span>
 		<span class="inline nowrap player-btn">Playback Rate: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span>
 		<span class="inline nowrap player-btn">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
+		<select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select>
 	</div>
 </div>
 {include file="menu.tpl"}
@@ -24,7 +25,6 @@
 	<script src="lib/theta-view.js" type="module">
 	</script> 
 	<script>
-	       (function(){
 				var url = "{$video_dash}";
 				var initialConfig = {
 					'streaming': {
@@ -40,8 +40,22 @@
 				player.updateSettings(initialConfig);
 				player.initialize(document.querySelector("#video"), url, true);
 				player.setAutoPlay(true);
+				
+				player.on("streamInitialized", function () {
+					var availableBitrates = { menuType: 'bitrate' };
+					availablevideoBitrates = player.getBitrateInfoListFor('video') || [];
+					
+					console.log(availablevideoBitrates);
+					availablevideoBitrates.forEach(function(Bitrate) {
+					  console.log(Math.floor(Bitrate.bitrate / 1000) + ' kbps');
+						var sel = document.getElementById('bitrate_list');
+						var opt = document.createElement('option');
+						opt.appendChild( document.createTextNode(Math.floor(Bitrate.bitrate / 1000) + ' kbps') );
+						opt.value = Math.floor((Bitrate.bitrate / 1000) + 1); 
+						sel.appendChild(opt);
+					});
 
-	       })();
+				});
 	</script> 
 	<script>
 	   const video  = document.getElementById('video');
@@ -51,6 +65,7 @@
 	   const skip_backward = document.getElementById('player-btn-forward');
 	   const volume = document.getElementById('volume');
 	   const playbackRate = document.getElementById('playbackRate');
+	   const bitrate_list = document.getElementById('bitrate_list');
 
 	   // Logic
 	   function togglePlay() {
@@ -96,6 +111,44 @@
 	     const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
 	     video.currentTime = scrubTime;
 	   }
+	   
+	   function selectBitrate() {
+			var sel_bitrate = bitrate_list.options[bitrate_list.selectedIndex].value;
+			console.log('selected: ' + sel_bitrate);
+			if(sel_bitrate == "auto")
+			{
+				console.log("Auto Select Quality"); 
+				var bitConfig = {
+					'streaming': {
+						'abr': {
+							maxBitrate: { audio: -1, video: -1 },
+							minBitrate: { audio: -1, video: -1 },
+						}
+					}
+				}
+				
+				console.log(bitConfig);
+
+				player.updateSettings(bitConfig);
+			}
+			else
+			{
+				console.log("Set Min to " + sel_bitrate); 
+				
+				var bitConfig = {
+					'streaming': {
+						'abr': {
+							maxBitrate: { audio: -1, video: sel_bitrate },
+							minBitrate: { audio: -1, video: sel_bitrate },
+						}
+					}
+				}
+				
+				console.log(bitConfig);
+
+				player.updateSettings(bitConfig);
+			}
+	   }
 
 	   // Event listeners
 	   video.addEventListener('click', togglePlay);
@@ -110,6 +163,8 @@
 	   volume.addEventListener('mousemove', rangeUpdate);
 	   playbackRate.addEventListener('change', rangeUpdate);
 	   playbackRate.addEventListener('mousemove', rangeUpdate);
+	   
+	   bitrate_list.addEventListener('change', selectBitrate);
 
 	   let mousedown = false;
 	   //progressBar.addEventListener("click", seek);
