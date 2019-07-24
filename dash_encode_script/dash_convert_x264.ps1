@@ -6,7 +6,7 @@ $endtime = ""
 #$starttime = "-ss 4 "
 #$endtime = "-t 00:04:48 "
 
-$x264_DASH_PARAMS="-x264opts keyint=24:min-keyint=24:no-scenecut "
+$x264_DASH_PARAMS=" -r 24 -x264opts keyint=24:min-keyint=24:no-scenecut "
 $hwaccel_PARAMS="-hwaccel dxva2 -threads 4 "
 
 If(Test-Path $input)
