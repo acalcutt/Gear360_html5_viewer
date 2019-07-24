@@ -15,3 +15,7 @@ $smarty->cache_dir    = SMARTY_ROOT.'cache/';
 
 $allowed = array("mpd");
 $video_menu = php_file_tree("videos/", "?video=[link]", $allowed);
+$smarty->assign('video_menu',$video_menu);
+
+$smarty->assign('initialVideoBitrate',$initialVideoBitrate);
+$smarty->assign('initialAudioBitrate',$initialAudioBitrate);

@@ -18,7 +18,7 @@
 </div>
 {include file="menu.tpl"}
 <div class="col content" id="content">
-	<div id="container">
+	<div id="container" ondragstart="return false;" ondrop="return false;">
 		<canvas id="360canvas"></canvas>
 	</div>
 	<script src="lib/theta-view.js" type="module">
@@ -26,15 +26,19 @@
 	<script>
 	       (function(){
 				var url = "{$video_dash}";
+				var initialConfig = {
+					'streaming': {
+						'abr': {
+							limitBitrateByPortal: false,
+							initialBitrate: { audio: {$initialAudioBitrate}, video: {$initialVideoBitrate} },
+							autoSwitchBitrate: { audio: true, video: true }
+						}
+					}
+				}
+				
 				var player = dashjs.MediaPlayer().create();
+				player.updateSettings(initialConfig);
 				player.initialize(document.querySelector("#video"), url, true);
-				player.on("streamInitialized", function () {
-					var bitrates = player.getBitrateInfoListFor("video"),	// bitrates are sorted from lowest to the best values so the last one has the best quality
-					midQuality = bitrates[Math.round(bitrates.length / 2)].qualityIndex; // set middle quality
-					player.setQualityFor("video", midQuality);
-					console.log('Bitrates available:' + bitrates.length);
-					console.log('midQuality:' + midQuality);
-				});
 				player.setAutoPlay(true);
 
 	       })();
