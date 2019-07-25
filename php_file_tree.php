@@ -15,6 +15,7 @@
 		For documentation and updates, visit http://abeautifulsite.net/notebook.php?article=21
 		
 	2019/7/20 - made it so empty directories don't show. - Andrew Calcutt
+	2019/7/24 - made "Home" link show at the top
 		
 */
 
@@ -52,8 +53,9 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 	
 	if( count($file) > 2 ) { // Use 2 instead of 0 to account for . and .. "directories"
 		$php_file_tree = "<ul";
-		if( $first_call ) { $php_file_tree .= " class=\"php-file-tree\""; $first_call = false; }
+		if( $first_call ) { $php_file_tree .= " class=\"php-file-tree\""; }
 		$php_file_tree .= ">";
+		if( $first_call ) { $php_file_tree .= "<li class=\"pft-home\"><a href=\".\">Home</a></li>"; $first_call = false; }
 		foreach( $file as $this_file ) {
 			if( $this_file != "." && $this_file != ".." ) {
 				if( is_dir("$directory/$this_file") ) {
