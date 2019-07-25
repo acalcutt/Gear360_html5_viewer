@@ -1,10 +1,11 @@
 {include file="header.tpl"}
 <div class="vidcontrols">
+	<div class="bt-menu-trigger">
+		<span></span>
+	</div>
 	<video autoplay="" controls="" id="video"><source src="{$video_fallback}" type="video/mp4"></video>
 	<div class="player-controls">
-		<div class="bt-menu-trigger">
-			<span></span>
-		</div><button class="player-btn toggle-play" id='toggle-play' title="Toggle Play">
+		<button class="player-btn toggle-play" id='toggle-play' title="Toggle Play">
 		<svg class="" viewbox="0 0 16 16" height="16" width="16">
 			<title>play</title>
 			<path d="M3 2l10 6-10 6z"></path>
@@ -51,7 +52,7 @@
 						var sel = document.getElementById('bitrate_list');
 						var opt = document.createElement('option');
 						opt.appendChild( document.createTextNode(Math.floor(Bitrate.bitrate / 1000) + ' kbps') );
-						opt.value = Math.floor((Bitrate.bitrate / 1000) + 1); 
+						opt.value = Bitrate.bitrate / 1000; 
 						sel.appendChild(opt);
 					});
 
