@@ -7,8 +7,11 @@
 	   html, body {
 	       height: 100%;
 	       width: 100%;
-	       margin: 0;
 	       font-family: sans-serif;
+	   }
+	   
+	   td {
+	       border: 1px solid black;
 	   }
 
 	   video {
@@ -17,25 +20,47 @@
 	   }
 	   
 	   #progress-bar {
-	       width: 200px;
+	       width: 20%;
 	       display: inline;
 	   }
 
 	   #volume {
-	       width: 100px;
+	       width: 10%;
 	   }
 	   
 	   #playbackRate {
-	       width: 100px;
+	       width: 10%;
 	   }
 	   
-	   .inline{
+	   .inline  {
 	       display: inline;
 	   }
 
+		.center {
+			text-align: center;
+		}
+		
+		#projectinfo {
+			width: 80%;
+			margin-left: auto;
+			margin-right: auto;
+			border: 1px solid black;
+			
+		}
+		
+		.pidesc {
+			background-color: #53ad61;
+			font-weight: bold;
+			width: 180px;
+		}
+		
+		.pitext {
+			background-color: #77c984;
+		}
+
 	   .vidcontrols {
 	       position: absolute;
-	       height: 100px;
+	       height: 120px;
 	       left: 300px;
 	       right: 0;
 	       bottom: 0;
@@ -55,6 +80,7 @@
 			left: 0;
 			width: 300px;
 			overflow: scroll;
+			background-color: #fff8ea
 		}
 
 		.menu.active {
@@ -65,7 +91,7 @@
 		.content {
 			position: absolute;
 			top: 0;
-			bottom: 100px;
+			bottom: 120px;
 			left: 300px;
 			right: 0;
 			overflow: hidden;
@@ -101,6 +127,7 @@
 		.php-file-tree {
 		   font-size: 15px;
 		   line-height: 1.5;
+		   background-color: #fff8ea
 		}
 
 	   .php-file-tree A {
@@ -132,11 +159,13 @@
 	.bt-menu-trigger {
 	   float:left;
 	   display: inline;
-	   font-size: 14px;
+	   font-size: 20px;
 	   position: relative;
 	   width: 2em;
 	   height: 2em;
 	   cursor: pointer;
+	   margin-left: 20px;
+	   margin-top: 40px;
 	}
 
 	.bt-menu-trigger span {
