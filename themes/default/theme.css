@@ -110,48 +110,8 @@ video {
 	vertical-align: middle;
 }
 
-.icon-play {
-    font-family: 'icomoon';
-    font-size: 24px;
-    color: white;
-    text-shadow: none;
-    -webkit-font-smoothing: antialiased;
+.video-icon {
 	cursor: pointer;
-}
-
-.full-screen {
-	vertical-align: middle;
-	box-sizing: border-box;
-	display: inline-block;
-	border: .1em solid currentColor;
-	width: 1em;
-	height: 1em;
-	position: relative;
-	background: #grey;
-	color: #1CCECE;
-}
-.full-screen:before {
-	content: '';
-	background: #04233D;
-	position: absolute;
-} 
-
-.full-screen:after {
-	content: '';
-	background: #grey;
-	position: absolute;
-}
-.full-screen:before {
-	width: .333em;
-	height: 1em;
-	left: .233em;
-	top: -.1em;
-}
-.full-screen:after {
-	width: 1em;
-	height: .333em;
-	top: .233em;
-	left: -.1em;
 }
 
 #controls {
