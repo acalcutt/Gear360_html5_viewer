@@ -14,7 +14,8 @@
 		<span class="inline nowrap player-btn">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"></span>
 		<span class="inline nowrap player-btn">Playback Rate: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span>
 		<span class="inline nowrap player-btn">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
-		<select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select>
+		<select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select><br />
+		<h3>{$video_dash}</h3>
 	</div>
 </div>
 {include file="menu.tpl"}
