@@ -1,0 +1,348 @@
+html, body {
+	height: 100%;
+	width: 100%;
+	font-family: sans-serif;
+}
+
+td {
+	border: 1px solid black;
+}
+
+.menu {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 300px;
+	overflow: scroll;
+	background-color: #fff8ea;
+}
+
+.menu.active {
+	left: -350px;
+	width: 300px;
+}
+
+.content {
+	position: absolute;
+	top: 0;
+	bottom: 120px;
+	left: 300px;
+	right: 0;
+	overflow: hidden;
+	background-color: #e7ffe2
+}
+
+.content.active {
+	left: 0;
+}
+
+.vidcontrols {
+	position: absolute;
+	height: 120px;
+	left: 300px;
+	right: 0;
+	bottom: 0;
+	background-color: grey;
+	text-align: center;
+	overflow: hidden;
+}
+
+.vidcontrols.active {
+	left: 0;
+}
+
+video {
+	width: 0px;
+	height: 0px;
+}
+
+#container {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+}
+
+#progress-bar {
+	width: 20%;
+	display: inline;
+}
+
+#volume {
+	width: 10%;
+}
+
+#playbackRate {
+	width: 10%;
+}
+
+.inline  {
+	display: inline;
+}
+
+.center {
+	text-align: center;
+}
+
+#projectinfo {
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid black;
+}
+
+.pidesc {
+	background-color: #53ad61;
+	font-weight: bold;
+	width: 180px;
+}
+
+.pitext {
+	background-color: #77c984;
+}
+
+.nowrap {
+   white-space: nowrap;
+}
+
+.player-controls {
+	vertical-align: middle;
+}
+
+.icon-play {
+    font-family: 'icomoon';
+    font-size: 24px;
+    color: white;
+    text-shadow: none;
+    -webkit-font-smoothing: antialiased;
+	cursor: pointer;
+}
+
+.full-screen {
+	vertical-align: middle;
+	box-sizing: border-box;
+	display: inline-block;
+	border: .1em solid currentColor;
+	width: 1em;
+	height: 1em;
+	position: relative;
+	background: #grey;
+	color: #1CCECE;
+}
+.full-screen:before {
+	content: '';
+	background: #04233D;
+	position: absolute;
+} 
+
+.full-screen:after {
+	content: '';
+	background: #grey;
+	position: absolute;
+}
+.full-screen:before {
+	width: .333em;
+	height: 1em;
+	left: .233em;
+	top: -.1em;
+}
+.full-screen:after {
+	width: 1em;
+	height: .333em;
+	top: .233em;
+	left: -.1em;
+}
+
+#controls {
+	bottom: 0;
+	left: 0;
+	position: absolute;
+	width: 100%;
+}
+
+.php-file-tree {
+	font-size: 15px;
+	line-height: 1.5;
+	background-color: #fff8ea
+}
+
+.php-file-tree A {
+	color: #000000;
+	text-decoration: none;
+}
+
+.php-file-tree A:hover {
+	color: #666666;
+}
+
+.php-file-tree .open {
+	font-style: italic;
+}
+
+.php-file-tree .closed {
+	font-style: normal;
+}
+
+.php-file-tree .pft-directory {
+	list-style-image: url(images/directory.png);
+}
+
+/* Default file */
+.php-file-tree LI.pft-file { list-style-image: url(images/file.png); }
+/* Additional file types */
+.php-file-tree LI.ext-mpd { list-style-image: url(images/film.png); }
+
+.bt-menu-trigger {
+	float:left;
+	display: inline;
+	font-size: 20px;
+	position: relative;
+	width: 2em;
+	height: 2em;
+	cursor: pointer;
+	margin-left: 20px;
+	margin-top: 40px;
+}
+
+.bt-menu-trigger span {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	display: block;
+	width: 100%;
+	height: 0.2em;
+	margin-top: -0.1em;
+	background-color: #fff;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-transition: background-color 0.3s;
+	transition: background-color 0.3s;
+}
+
+
+.bt-menu-trigger span:after,
+.bt-menu-trigger span:before {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: #fff;
+	content: '';
+	-webkit-transition: -webkit-transform 0.3s;
+	transition: transform 0.3s;
+}
+
+.bt-menu-trigger.bt-menu-alt span:before {
+	-webkit-transform: translateY(-0.5em);
+	transform: translateY(-0.5em);
+}
+
+.bt-menu-trigger.bt-menu-alt span:after {
+	-webkit-transform: translateY(0.5em);
+	transform: translateY(0.5em);
+}
+
+.bt-menu-trigger span:before {
+	-webkit-transform: translateY(-0.36em) translateX(-0.65em) rotate(-45deg) scaleX(0.6);
+	transform: translateY(-0.35em) translateX(-0.65em) rotate(-45deg) scaleX(0.6);
+}
+
+.bt-menu-trigger span:after {
+	-webkit-transform: translateY(0.36em) translateX(-0.65em) rotate(45deg) scaleX(0.6);
+	transform: translateY(0.35em) translateX(-0.65em) rotate(45deg) scaleX(0.6);
+}
+
+/* ---------------------------------------------------
+MEDIAQUERIES
+----------------------------------------------------- */
+@media (max-width: 768px), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and ( -o-min-device-pixel-ratio: 2/1), only screen and ( min-device-pixel-ratio: 2), only screen and ( min-resolution: 192dpi), only screen and ( min-resolution: 2dppx) {
+	.vidcontrols {
+		left: 0;
+	}
+
+	.vidcontrols.active {
+		left: 300px;
+	}
+
+	.menu {
+		left: -350px;
+		width: 300px;
+	}
+
+	.menu.active {
+		left: 0;
+		width: 300px;
+	}
+
+	.content {
+		left: 0;
+	}
+
+	.content.active {
+		left: 300px;
+	}   
+
+	.bt-menu-trigger span:before {
+		-webkit-transform: translateY(-0.5em);
+		transform: translateY(-0.5em);
+	}
+
+	.bt-menu-trigger span:after {
+		-webkit-transform: translateY(0.5em);
+		transform: translateY(0.5em);
+	}
+
+	.bt-menu-trigger.bt-menu-alt span:before {
+		-webkit-transform: translateY(-0.36em) translateX(-0.65em) rotate(-45deg) scaleX(0.6);
+		transform: translateY(-0.35em) translateX(-0.65em) rotate(-45deg) scaleX(0.6);
+	}
+
+	.bt-menu-trigger.bt-menu-alt span:after {
+		-webkit-transform: translateY(0.36em) translateX(-0.65em) rotate(45deg) scaleX(0.6);
+		transform: translateY(0.35em) translateX(-0.65em) rotate(45deg) scaleX(0.6);
+	}
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and ( -o-min-device-pixel-ratio: 2/1), only screen and ( min-device-pixel-ratio: 2), only screen and ( min-resolution: 192dpi), only screen and ( min-resolution: 2dppx) {
+	body {
+		font-size: 130%;
+	}
+
+	button {
+		font-size: 130%;
+	}
+
+	textarea {
+		font-size: 130%;
+	}
+
+	input[type=file] {
+		font-size: 130%;
+	}
+
+	input[type=text] {
+		font-size: 130%;
+	}
+
+	input[type=submit] {
+		font-size: 130%;
+	}
+
+	select {
+		font-size: 130%;
+	}
+
+	input[type=password] {
+		font-size: 130%;
+	}
+	
+	input[type=radio] {
+		width: 20px;
+		height: 20px;
+	}
+}
