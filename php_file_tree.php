@@ -15,20 +15,23 @@
 		For documentation and updates, visit http://abeautifulsite.net/notebook.php?article=21
 		
 	2019/7/20 - made it so empty directories don't show. - Andrew Calcutt
-	2019/7/24 - made "Home" link show at the top
+	2019/7/24 - made "Home" link show at the top. - Andrew Calcutt
+	2019/7/28 - Added file array output. - Andrew Calcutt
 		
 */
 
 
-function php_file_tree($directory, $return_link, $extensions = array()) {
+function php_file_tree($directory, $return_link, $extensions = array(), $file_list = array()) {
 	// Generates a valid XHTML list of all directories, sub-directories, and files in $directory
 	// Remove trailing slash
 	if( substr($directory, -1) == "/" ) $directory = substr($directory, 0, strlen($directory) - 1);
-	$code .= php_file_tree_dir($directory, $return_link, $extensions);
-	return $code;
+	$arr_ret = php_file_tree_dir($directory, $return_link, $extensions, true, $file_list);
+	$code .= $arr_ret["data"];
+	$file_list = $arr_ret["file_list"];
+	return array("data"=>$code,"file_list"=>$file_list);
 }
 
-function php_file_tree_dir($directory, $return_link, $extensions = array(), $first_call = true) {
+function php_file_tree_dir($directory, $return_link, $extensions = array(), $first_call = true, $file_list = array()) {
 	// Recursive function called by php_file_tree() to list directories/files
 	
 	// Get and sort directories/files
@@ -59,7 +62,9 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 		foreach( $file as $this_file ) {
 			if( $this_file != "." && $this_file != ".." ) {
 				if( is_dir("$directory/$this_file") ) {
-					$subdir = php_file_tree_dir("$directory/$this_file", $return_link ,$extensions, false);
+					$arr_ret = php_file_tree_dir("$directory/$this_file", $return_link ,$extensions, false, $file_list);
+					$subdir = $arr_ret["data"];
+					$file_list = $arr_ret["file_list"];
 					if($subdir)
 					{
 						// Directory
@@ -74,12 +79,14 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 					$ext = "ext-" . substr($this_file, strrpos($this_file, ".") + 1); 
 					$link = str_replace("[link]", "$directory/" . urlencode($this_file), $return_link);
 					$php_file_tree .= "<li class=\"pft-file " . strtolower($ext) . "\"><a href=\"$link\">" . htmlspecialchars($this_file) . "</a></li>";
+					$file_list[] = "$directory/" . urlencode($this_file);
 				}
 			}
 		}
 		$php_file_tree .= "</ul>";
 	}
-	return $php_file_tree;
+
+	return array("data"=>$php_file_tree,"file_list"=>$file_list);
 }
 
 // For PHP4 compatibility

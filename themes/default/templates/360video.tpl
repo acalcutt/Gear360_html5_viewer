@@ -8,6 +8,8 @@
 		<span id="iconPlayPause" class="video-icon" title="Play/Pause"><img id="playbtn" src="{$theme_dir}images/play-30.png"></span>
 		<span id="iconSeekBackward" class="video-icon" data-skip="-10" title="10s Backward"><img src="{$theme_dir}images/rewind-30.png"></span>
 		<span id="iconSeekForward" class="video-icon" data-skip="10" title="10s Forward"><img src="{$theme_dir}images/fast-forward-30.png"></span>
+		<span id="iconPreviousFile" class="video-icon" title="Previous File"><img src="{$theme_dir}images/node-up-30.png"></span>
+		<span id="iconNextFile" class="video-icon" title="Next File"><img src="{$theme_dir}images/node-down-30.png"></span>
 		<span id="iconFullscreen" class="video-icon" title="Full Screen"><img src="{$theme_dir}images/fit-to-width-30.png"></span>
 		<span class="inline nowrap player-btn">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"></span>
 		<span class="inline nowrap player-btn">Playback Rate: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span>
@@ -61,10 +63,14 @@
 		const toggle = document.getElementById('iconPlayPause');
 		const skip_forward = document.getElementById('iconSeekBackward');
 		const skip_backward = document.getElementById('iconSeekForward');
+		const file_forward = document.getElementById('iconNextFile');
+		const file_backward = document.getElementById('iconPreviousFile');
 		const full_screen = document.getElementById('iconFullscreen');
 		const volume = document.getElementById('volume');
 		const playbackRate = document.getElementById('playbackRate');
 		const bitrate_list = document.getElementById('bitrate_list');
+		const CurrentVideo = '{$video_dash}';
+		const VideoList = {$file_list|json_encode}; 		
 
 		function togglePlay() {
 			const playState = video.paused ? 'play' : 'pause';
@@ -80,9 +86,29 @@
 			}
 		}
 
+		function NextFile() {
+			var i = VideoList.indexOf(CurrentVideo);
+			i = i + 1; // increase i by one
+			i = i % VideoList.length; // if we've gone too high, start from `0` again
+			var url = "{$website_root}index.php?video=" + VideoList[i]
+			window.location.href = url
+
+		}
+		
+		function PrevFile() {
+			var i = VideoList.indexOf(CurrentVideo);
+			if (i === 0) { // i would become 0
+				i = VideoList.length; // so put it at the other end of the array
+			}
+			i = i - 1; // decrease by one
+			var url = "{$website_root}index.php?video=" + VideoList[i]
+			window.location.href = url
+		}
+
 		function skip() {
 			video.currentTime += parseFloat(this.dataset.skip);
 		}
+		
 
 		function rangeUpdate() {
 			video[this.name] = this.value;
@@ -158,6 +184,8 @@
 		toggle.addEventListener('click', togglePlay);
 		skip_forward.addEventListener('click', skip);
 		skip_backward.addEventListener('click', skip);
+		file_forward.addEventListener('click', NextFile);
+		file_backward.addEventListener('click', PrevFile);
 		full_screen.addEventListener('click', goFullScreen);
 		volume.addEventListener('change', rangeUpdate);
 		volume.addEventListener('mousemove', rangeUpdate);
