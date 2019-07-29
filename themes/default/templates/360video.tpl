@@ -5,16 +5,18 @@
 	</div>
 	<video autoplay="" controls="" id="video"><source src="{$video_fallback}" type="video/mp4"></video>
 	<div class="player-controls">
-		<span id="iconPlayPause" class="video-icon" title="Play/Pause"><img id="playbtn" src="{$theme_dir}images/play-30.png"></span>
-		<span id="iconSeekBackward" class="video-icon" data-skip="-10" title="10s Backward"><img src="{$theme_dir}images/rewind-30.png"></span>
-		<span id="iconSeekForward" class="video-icon" data-skip="10" title="10s Forward"><img src="{$theme_dir}images/fast-forward-30.png"></span>
-		<span id="iconPreviousFile" class="video-icon" title="Previous File"><img src="{$theme_dir}images/node-up-30.png"></span>
-		<span id="iconNextFile" class="video-icon" title="Next File"><img src="{$theme_dir}images/node-down-30.png"></span>
-		<span id="iconFullscreen" class="video-icon" title="Full Screen"><img src="{$theme_dir}images/fit-to-width-30.png"></span>
+		<span id="iconPlayPause" class="video-icon" title="Play/Pause"><img class="video-button" id="playbtn" src="{$theme_dir}images/play-60.png"></span>
+		<span id="iconSeekBackward" class="video-icon" data-skip="-10" title="10s Backward"><img class="video-button" src="{$theme_dir}images/rewind-60.png"></span>
+		<span id="iconSeekForward" class="video-icon" data-skip="10" title="10s Forward"><img class="video-button" src="{$theme_dir}images/fast-forward-60.png"></span>
+		<span id="iconPreviousFile" class="video-icon" title="Previous File"><img class="video-button" src="{$theme_dir}images/node-up-60.png"></span>
+		<span id="iconNextFile" class="video-icon" title="Next File"><img class="video-button" src="{$theme_dir}images/node-down-60.png"></span>
+		<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
 		<span class="inline nowrap player-btn">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"></span>
-		<span class="inline nowrap player-btn">Playback Rate: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span>
+		<span class="inline nowrap player-btn">Speed: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span>
 		<span class="inline nowrap player-btn">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
-		<select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select><br />
+		<select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select>
+	</div>
+	<div>
 		<h3>{$video_dash}</h3>
 	</div>
 </div>
@@ -81,9 +83,9 @@
 		function updateButton() {
 			image = document.getElementById('playbtn');
 			if (player.isPaused()) {
-				image.src = "{$theme_dir}images/play-30.png";
+				image.src = "{$theme_dir}images/play-60.png";
 			} else {
-				image.src = "{$theme_dir}images/pause-30.png";
+				image.src = "{$theme_dir}images/pause-60.png";
 			}
 		}
 

@@ -17,21 +17,20 @@ td {
 	top: 0;
 	bottom: 0;
 	left: 0;
-	width: 300px;
+	width: 350px;
 	overflow: scroll;
 	background-color: #fff8ea;
 }
 
 .menu.active {
 	left: -350px;
-	width: 300px;
 }
 
 .content {
 	position: absolute;
 	top: 0;
-	bottom: 120px;
-	left: 300px;
+	bottom: 140px;
+	left: 350px;
 	right: 0;
 	overflow: hidden;
 	background-color: #e7ffe2
@@ -43,8 +42,8 @@ td {
 
 .vidcontrols {
 	position: absolute;
-	height: 120px;
-	left: 300px;
+	height: 140px;
+	left: 350px;
 	right: 0;
 	bottom: 0;
 	background-color: grey;
@@ -118,6 +117,11 @@ video {
 	cursor: pointer;
 }
 
+.video-button {
+	width: 40px;
+	height 40px
+}
+
 #controls {
 	bottom: 0;
 	left: 0;
@@ -126,7 +130,7 @@ video {
 }
 
 .php-file-tree {
-	font-size: 15px;
+	font-size: 18px;
 	line-height: 1.5;
 	background-color: #fff8ea
 }
@@ -152,9 +156,9 @@ video {
 	list-style-image: url(images/directory.png);
 }
 
-/* Default file */
+/* Menu File Types */
+.php-file-tree LI.pft-home { list-style-image: url(images/home-16.png); }
 .php-file-tree LI.pft-file { list-style-image: url(images/file.png); }
-/* Additional file types */
 .php-file-tree LI.ext-mpd { list-style-image: url(images/film.png); }
 
 .bt-menu-trigger {
