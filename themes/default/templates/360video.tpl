@@ -11,9 +11,9 @@
 		<span id="iconPreviousFile" class="video-icon" title="Previous File"><img class="video-button" src="{$theme_dir}images/node-up-60.png"></span>
 		<span id="iconNextFile" class="video-icon" title="Next File"><img class="video-button" src="{$theme_dir}images/node-down-60.png"></span>
 		<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
-		<span class="inline nowrap player-btn">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"></span>
-		<span class="inline nowrap player-btn">Speed: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span>
-		<span class="inline nowrap player-btn">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
+		<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"></span>
+		<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"></span>
+		<span class="inline nowrap player-btn video-icon">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
 		<select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select>
 	</div>
 	<div>

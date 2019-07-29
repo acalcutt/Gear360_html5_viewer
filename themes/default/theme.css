@@ -68,16 +68,16 @@ video {
 }
 
 #progress-bar {
-	width: 14%;
+	width: 150px;
 	display: inline;
 }
 
 #volume {
-	width: 7%;
+	width: 50px;
 }
 
 #playbackRate {
-	width: 7%;
+	width: 50px;
 }
 
 .inline  {
@@ -115,6 +115,14 @@ video {
 
 .video-icon {
 	cursor: pointer;
+	background-color: #e7ffe2;
+	display: inline-block;
+	border-radius: 8px;
+	border: 2px solid #4CAF50; /* Green */
+}
+
+.video-icon:hover  {
+	  background-color: #5CAF50;
 }
 
 .video-button {
@@ -130,7 +138,7 @@ video {
 }
 
 .php-file-tree {
-	font-size: 18px;
+	font-size: 20px;
 	line-height: 1.5;
 	background-color: #fff8ea
 }
