@@ -55,7 +55,8 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 	}
 	
 	if( count($file) > 2 ) { // Use 2 instead of 0 to account for . and .. "directories"
-		$php_file_tree = "<ul";
+		$id = base64_encode("ul/$directory");
+		$php_file_tree = "<ul id=\"".$id."\"";
 		if( $first_call ) { $php_file_tree .= " class=\"php-file-tree\""; }
 		$php_file_tree .= ">";
 		if( $first_call ) { $php_file_tree .= "<li class=\"pft-home\"><a href=\".\">Home</a></li>"; $first_call = false; }
@@ -68,7 +69,8 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 					if($subdir)
 					{
 						// Directory
-						$php_file_tree .= "<li class=\"pft-directory\"><a href=\"#\">" . htmlspecialchars($this_file) . "</a>";
+						$id = base64_encode("li/$directory/".$this_file);
+						$php_file_tree .= "<li id=\"".$id."\" class=\"pft-directory\"><a href=\"#\">" . htmlspecialchars($this_file) . "</a>";
 						$php_file_tree .= $subdir;
 						$php_file_tree .= "</li>";
 					}
@@ -78,7 +80,8 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 					// Get extension (prepend 'ext-' to prevent invalid classes from extensions that begin with numbers)
 					$ext = "ext-" . substr($this_file, strrpos($this_file, ".") + 1); 
 					$link = str_replace("[link]", "$directory/" . urlencode($this_file), $return_link);
-					$php_file_tree .= "<li class=\"pft-file " . strtolower($ext) . "\"><a href=\"$link\">" . htmlspecialchars($this_file) . "</a></li>";
+					$id = base64_encode("li/$directory/".$this_file);
+					$php_file_tree .= "<li id=\"".$id."\" class=\"pft-file " . strtolower($ext) . "\"><a href=\"$link\">" . htmlspecialchars($this_file) . "</a></li>";
 					$file_list[] = "$directory/" . urlencode($this_file);
 				}
 			}

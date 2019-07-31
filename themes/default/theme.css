@@ -137,10 +137,23 @@ video {
 	width: 100%;
 }
 
+ul {
+	display: none;
+}
+
+.ul_open {
+	display: block;
+}
+
+.li_open {
+	display: list-item;
+}
+
 .php-file-tree {
 	font-size: 20px;
 	line-height: 1.5;
-	background-color: #fff8ea
+	background-color: #fff8ea;
+	display: block;
 }
 
 .php-file-tree A {

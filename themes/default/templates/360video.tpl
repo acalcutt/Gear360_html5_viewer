@@ -29,7 +29,10 @@
 	<script src="lib/theta-view.js" type="module">
 	</script> 
 	<script>
-		var url = "{$video_dash}";
+		var urlParams = new URLSearchParams(window.location.search);
+		dash_video = urlParams.get('video')
+	
+		var url = dash_video;
 		var initialConfig = {
 			'streaming': {
 				'abr': {
