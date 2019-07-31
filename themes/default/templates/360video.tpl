@@ -24,15 +24,16 @@
 <div class="col content" id="content">
 	<div id="container" ondragstart="return false;" ondrop="return false;">
 		<canvas id="360canvas"></canvas>
+		<menu id="controls">
+		<img id="zoom_out" class="canvas-menu-icon" src="{$theme_dir}images/plus-60.png">
+		<img id="zoom_in" class="canvas-menu-icon" src="{$theme_dir}images/minus-60.png">
 		</menu>
 	</div>
 	<script src="lib/theta-view.js" type="module">
 	</script> 
 	<script>
 		var urlParams = new URLSearchParams(window.location.search);
-		dash_video = urlParams.get('video')
-	
-		var url = dash_video;
+		var url = urlParams.get('video')
 		var initialConfig = {
 			'streaming': {
 				'abr': {
@@ -51,14 +52,12 @@
 		player.on("streamInitialized", function () {
 			var availableBitrates = { menuType: 'bitrate' };
 			availablevideoBitrates = player.getBitrateInfoListFor('video') || [];
-			
-			console.log(availablevideoBitrates);
+
 			availablevideoBitrates.forEach(function(Bitrate) {
-			  console.log(Math.floor(Bitrate.bitrate / 1000) + ' kbps');
 				var sel = document.getElementById('bitrate_list');
 				var opt = document.createElement('option');
-				opt.appendChild( document.createTextNode(Math.floor(Bitrate.bitrate / 1000) + ' kbps') );
-				opt.value = Bitrate.bitrate / 1000; 
+				opt.appendChild( document.createTextNode(Number((Bitrate.bitrate / 1000000).toFixed(1)) + ' Mbps') );
+				opt.value = Math.round(Bitrate.bitrate / 1000) + 1; 
 				sel.appendChild(opt);
 			});
 

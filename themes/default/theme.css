@@ -109,6 +109,11 @@ video {
    white-space: nowrap;
 }
 
+.canvas-menu-icon {
+	width: 25px;
+	height: 25px;
+}
+
 .player-controls {
 	vertical-align: middle;
 }
