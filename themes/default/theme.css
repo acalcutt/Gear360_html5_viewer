@@ -65,6 +65,9 @@ video {
 	overflow: hidden;
 	width: 100%;
 	height: 100%;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
 
 #progress-bar {
@@ -132,7 +135,7 @@ video {
 
 .video-button {
 	width: 40px;
-	height 40px
+	height 40px;
 }
 
 #controls {
@@ -140,6 +143,34 @@ video {
 	left: 0;
 	position: absolute;
 	width: 100%;
+
+}
+
+.canvas_center {
+    position:absolute;
+    margin-left:-50px;
+	margin: 45vh auto 0;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+}
+
+.canv_msg {
+	display: block;
+	cursor: pointer;
+	text-align: center;
+    background: rgba(0,0,0,0.4);
+	color: #fff;
+	text-shadow:
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
+}
+
+.canv_thumb {
+	width:320px;
+	height:180px;
 }
 
 ul {
@@ -261,6 +292,11 @@ MEDIAQUERIES
 
 	.vidcontrols.active {
 		left: 300px;
+	}
+	
+	.canv_thumb {
+		width:160px;
+		height:90px;
 	}
 
 	.menu {
