@@ -17,7 +17,7 @@
 		<select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select>
 	</div>
 	<div>
-		<h3>{$video_dash}</h3>
+		<h3>{$title}</h3>
 		
 	</div>
 </div>
