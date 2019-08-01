@@ -55,12 +55,28 @@ td {
 	left: 0;
 }
 
-video {
-	width: 0px;
-	height: 0px;
+.video_default {
+	width: 100%;
+	height: 100%;
+	display: none;
+}
+
+.video_default.active {
+	display: block;
+}
+
+.canvas_default {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.canvas_default.hidden {
+	display: none;
 }
 
 #container {
+	background-color: #000000;
 	position: relative;
 	overflow: hidden;
 	width: 100%;
@@ -144,6 +160,10 @@ video {
 	position: absolute;
 	width: 100%;
 
+}
+
+#controls.hidden {
+	display: none;
 }
 
 .canvas_center {

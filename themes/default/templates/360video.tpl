@@ -3,13 +3,13 @@
 	<div class="bt-menu-trigger">
 		<span></span>
 	</div>
-	<video autoplay controls playsinline id="video"><source src="{$video_fallback}" type="video/mp4"></video>
 	<div class="player-controls">
-		<span id="iconPlayPause" class="video-icon" title="Play/Pause"><img class="video-button" id="playbtn" src="{$theme_dir}images/play-60.png"></span>
+		<span id="iconPlayPause" class="video-icon" title="Play"><img class="video-button" id="playbtn" src="{$theme_dir}images/play-60.png"></span>
 		<span id="iconSeekBackward" class="video-icon" data-skip="-10" title="10s Backward"><img class="video-button" src="{$theme_dir}images/rewind-60.png"></span>
 		<span id="iconSeekForward" class="video-icon" data-skip="10" title="10s Forward"><img class="video-button" src="{$theme_dir}images/fast-forward-60.png"></span>
 		<span id="iconPreviousFile" class="video-icon" title="Previous Video"><img class="video-button" src="{$theme_dir}images/node-up-60.png"></span>
 		<span id="iconNextFile" class="video-icon" title="Next Video"><img class="video-button" src="{$theme_dir}images/node-down-60.png"></span>
+		<span id="iconCamView" class="video-icon" title="Source View"><img class="video-button" id="videobtn" src="{$theme_dir}images/video-camera-60.png"></span>
 		<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
 		<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
 		<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1.0x</label></span>
@@ -24,11 +24,13 @@
 {include file="menu.tpl"}
 <div class="col content" id="content">
 	<div id="container" ondragstart="return false;" ondrop="return false;">
-		<canvas id="360canvas"></canvas>
+		<video autoplay playsinline id="video" class="video_default"><source src="{$video_fallback}" type="video/mp4"></video>
+		<canvas id="360canvas" class="canvas_default"></canvas>
 		<div id="canvas_message" class="canvas_center"></div>
 		<menu id="controls">
 		<img id="zoom_out" class="canvas-menu-icon" src="{$theme_dir}images/plus-60.png">
 		<img id="zoom_in" class="canvas-menu-icon" src="{$theme_dir}images/minus-60.png">
+		
 		</menu>
 	</div>
 	<script src="lib/theta-view.js" type="module">
@@ -74,6 +76,7 @@
 		const file_forward = document.getElementById('iconNextFile');
 		const file_backward = document.getElementById('iconPreviousFile');
 		const full_screen = document.getElementById('iconFullscreen');
+		const cam_view = document.getElementById('iconCamView');
 		const volume = document.getElementById('volume');
 		const playbackRate = document.getElementById('playbackRate');
 		const bitrate_list = document.getElementById('bitrate_list');
@@ -89,8 +92,10 @@
 			image = document.getElementById('playbtn');
 			if (player.isPaused()) {
 				image.src = "{$theme_dir}images/play-60.png";
+				toggle.setAttribute('title', 'Play');
 			} else {
 				image.src = "{$theme_dir}images/pause-60.png";
+				toggle.setAttribute('title', 'Pause');
 			}
 			canvas_message.innerHTML = "";
 		}
@@ -237,6 +242,24 @@
 			canvfile_backward.addEventListener('click', PrevFile);
 		}
 
+		function toggleVideo() {
+			$('.video_default').toggleClass('active');
+			$('.canvas_default').toggleClass('hidden');
+			$('#controls').toggleClass('hidden');
+		   var resizeEvent = window.document.createEvent('UIEvents'); 
+		   resizeEvent.initUIEvent('resize', true, false, window, 0); 
+		   window.dispatchEvent(resizeEvent);
+		   
+		   	var videobtn = document.getElementById('videobtn');
+			if (video.classList.contains("active")) {
+				videobtn.src = "{$theme_dir}images/panorama-60.png";
+				cam_view.setAttribute('title', '360 View');
+			} else {
+				videobtn.src = "{$theme_dir}images/video-camera-60.png";
+				cam_view.setAttribute('title', 'Source View');
+			}
+		}
+
 		// Event listeners
 		video.addEventListener('click', togglePlay);
 		video.addEventListener('play', updateButton);
@@ -251,6 +274,7 @@
 		file_forward.addEventListener('click', NextFile);
 		file_backward.addEventListener('click', PrevFile);
 		full_screen.addEventListener('click', goFullScreen);
+		cam_view.addEventListener('click', toggleVideo);
 		volume.addEventListener('change', rangeUpdate);
 		volume.addEventListener('mousemove', rangeUpdate);
 		playbackRate.addEventListener('change', rangeUpdate);
