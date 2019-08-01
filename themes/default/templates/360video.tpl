@@ -126,8 +126,9 @@
 
 		function rangeUpdate() {
 			video[this.name] = this.value;
-			$("#pbrate").text((Number(this.value).toFixed(1)) + "x");
-			
+			if(this.name == "playbackRate") {
+				$("#pbrate").text((Number(this.value).toFixed(1)) + "x");
+			}
 		}
 
 		function updateProgressBar() {
