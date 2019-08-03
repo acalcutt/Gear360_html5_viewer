@@ -66,8 +66,8 @@ If(Test-Path $input)
     Write-Host "Creating $outfile7 | ffmpeg.exe $params7"
     if (-Not (Test-Path $outfile7)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params7"}
 
-    $thumbnail_name = "$($output_folder)thumbnail.png"
-    $params8 = "$($starttime)-i $input -vframes 1 $thumbnail_name"
+    $thumbnail_name = "$($output_folder)thumbnail.jpg"
+    $params8 = "$($starttime)-i $input -qscale:v 4 -vframes 1 $thumbnail_name"
     Write-Host "Creating $thumbnail_name | ffmpeg.exe $params8"
     if (-Not (Test-Path $thumbnail_name)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params8"}
 
