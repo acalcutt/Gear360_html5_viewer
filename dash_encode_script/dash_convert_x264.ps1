@@ -1,10 +1,10 @@
 ﻿$input = Read-Host 'What file do you want to convert?'
-#$input = "Z:\360_0053.MP4"
+#$input = "X:\360_0067.MP4"
 
 $starttime = ""
 $endtime = ""
-#$starttime = "-ss 4 "
-#$endtime = "-t 00:04:48 "
+#$starttime = "-ss 3 "
+#$endtime = "-t 00:01:00 "
 
 $x264_DASH_PARAMS=" -r 24 -x264opts keyint=24:min-keyint=24:no-scenecut "
 $hwaccel_PARAMS="-hwaccel dxva2 -threads 4 "
@@ -20,7 +20,14 @@ If(Test-Path $input)
     Write-Host "Creating output directory $output_folder"
     New-Item -ItemType Directory -Force -Path $output_folder
 
+    #Create Thumbnail
+
     $outfile_basename = "$($output_folder)$($basename)"
+
+    $thumbnail_name = "$($output_folder)thumbnail.jpg"
+    $params8 = "$($starttime)-i $input -qscale:v 4 -vframes 1 $thumbnail_name"
+    Write-Host "Creating $thumbnail_name | ffmpeg.exe $params8"
+    if (-Not (Test-Path $thumbnail_name)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params8"}
 
     #Create Faillback MP4 (x264/AAC), for use when dash is not supported
 
@@ -41,23 +48,23 @@ If(Test-Path $input)
     Write-Host "Creating $outfile2 | ffmpeg.exe $params2"
     if (-Not (Test-Path $outfile2)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params2"}
 
-    $outfile3 = "$($outfile_basename)_1280x720_2000k.mp4"
-    $params3 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1280x720 -b:v 2000k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile3"
+    $outfile3 = "$($outfile_basename)_1280x720_2500k.mp4"
+    $params3 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1280x720 -b:v 2500k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile3"
     Write-Host "Creating $outfile3 | ffmpeg.exe $params3"
     if (-Not (Test-Path $outfile3)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params3"}
 
-    $outfile4 = "$($outfile_basename)_1280x720_4000k.mp4"
-    $params4 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1280x720 -b:v 4000k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile4"
+    $outfile4 = "$($outfile_basename)_1280x720_5000k.mp4"
+    $params4 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1280x720 -b:v 5000k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile4"
     Write-Host "Creating $outfile4 | ffmpeg.exe $params4"
     if (-Not (Test-Path $outfile4)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params4"}
 
-    $outfile5 = "$($outfile_basename)_1920x1080_8000k.mp4"
-    $params5 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1920x1080 -b:v 8000k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile5"
+    $outfile5 = "$($outfile_basename)_1920x1080_7500k.mp4"
+    $params5 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1920x1080 -b:v 7500k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile5"
     Write-Host "Creating $outfile5 | ffmpeg.exe $params5"
     if (-Not (Test-Path $outfile5)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params5"}
 
-    $outfile6 = "$($outfile_basename)_1920x1080_12000k.mp4"
-    $params6 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1920x1080 -b:v 12000k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile6"
+    $outfile6 = "$($outfile_basename)_1920x1080_10000k.mp4"
+    $params6 = "$($hwaccel_PARAMS)$($starttime)-i $input $($endtime)-c:v libx264 -s 1920x1080 -b:v 10000k $x264_DASH_PARAMS -an -f mp4 -dash 1 $outfile6"
     Write-Host "Creating $outfile6 | ffmpeg.exe $params6"
     if (-Not (Test-Path $outfile6)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params6"}
 
@@ -66,10 +73,7 @@ If(Test-Path $input)
     Write-Host "Creating $outfile7 | ffmpeg.exe $params7"
     if (-Not (Test-Path $outfile7)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params7"}
 
-    $thumbnail_name = "$($output_folder)thumbnail.jpg"
-    $params8 = "$($starttime)-i $input -qscale:v 4 -vframes 1 $thumbnail_name"
-    Write-Host "Creating $thumbnail_name | ffmpeg.exe $params8"
-    if (-Not (Test-Path $thumbnail_name)) {Start-Process -Wait -FilePath "ffmpeg.exe" -ArgumentList "$params8"}
+
 
     #Create the dash manifest file
 
