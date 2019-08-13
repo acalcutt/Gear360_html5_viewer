@@ -1,5 +1,5 @@
-﻿#$input = Read-Host `"What file do you want to convert?`"
-$input = "M:\360 Videos\Origional Files\ATV\2019-06-15 - Byron ME\360_0029.MP4"
+﻿$input = Read-Host `"What file do you want to convert?`"
+#$input = "M:\360 Videos\Origional Files\ATV\2019-06-15 - Byron ME\360_0029.MP4"
 
 $starttime = ""
 $endtime = ""
