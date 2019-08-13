@@ -1,26 +1,4 @@
 {include file="header.tpl"}
-<div class="vidcontrols">
-	<div class="bt-menu-trigger">
-		<span></span>
-	</div>
-	<div class="player-controls">
-		<span id="iconPlayPause" class="video-icon" title="Play"><img class="video-button" id="playbtn" src="{$theme_dir}images/play-60.png"></span>
-		<span id="iconSeekBackward" class="video-icon" data-skip="-10" title="10s Backward"><img class="video-button" src="{$theme_dir}images/rewind-60.png"></span>
-		<span id="iconSeekForward" class="video-icon" data-skip="10" title="10s Forward"><img class="video-button" src="{$theme_dir}images/fast-forward-60.png"></span>
-		<span id="iconPreviousFile" class="video-icon" title="Previous Video"><img class="video-button" src="{$theme_dir}images/node-up-60.png"></span>
-		<span id="iconNextFile" class="video-icon" title="Next Video"><img class="video-button" src="{$theme_dir}images/node-down-60.png"></span>
-		<span id="iconCamView" class="video-icon" title="Source View"><img class="video-button" id="videobtn" src="{$theme_dir}images/video-camera-60.png"></span>
-		<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
-		<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
-		<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.5" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1.0x</label></span>
-		<span class="inline nowrap player-btn video-icon">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
-		<select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select>
-	</div>
-	<div>
-		<h3>{$title}</h3>
-		
-	</div>
-</div>
 {include file="menu.tpl"}
 <div class="col content" id="content">
 	<div id="container" ondragstart="return false;" ondrop="return false;">
@@ -28,9 +6,28 @@
 		<canvas id="360canvas" class="canvas_default"></canvas>
 		<div id="canvas_message" class="canvas_center"></div>
 		<menu id="controls">
-		<img id="zoom_out" class="canvas-menu-icon" src="{$theme_dir}images/plus-60.png">
-		<img id="zoom_in" class="canvas-menu-icon" src="{$theme_dir}images/minus-60.png">
-		
+			<span id="iconShowHideMenu" class="video-icon" title="Toggle Menu"><img src="{$theme_dir}images/close-pane-48.png" id="showhidemenubtn1" class="video-button menu_default_visible"/><img src="{$theme_dir}images/open-pane-48.png" id="showhidemenubtn2" class="video-button menu_default_hidden"/></span>
+			<span id="iconShowHide" class="video-icon" title="Toggle Controls"><img class="video-button" id="showhidebtn" src="{$theme_dir}images/control-panel-64.png"></span>
+			<span id="all_controls" class="all_controls">
+				<span class="video-icon"><b>{$title}</b></span>
+				<br />
+				<span id="iconPlayPause" class="video-icon" title="Play"><img class="video-button" id="playbtn" src="{$theme_dir}images/play-60.png"></span>
+				<span id="iconSeekBackward" class="video-icon" data-skip="-10" title="10s Backward"><img class="video-button" src="{$theme_dir}images/rewind-60.png"></span>
+				<span id="iconSeekForward" class="video-icon" data-skip="10" title="10s Forward"><img class="video-button" src="{$theme_dir}images/fast-forward-60.png"></span>
+				<span id="iconPreviousFile" class="video-icon" title="Previous Video"><img class="video-button" src="{$theme_dir}images/node-up-60.png"></span>
+				<span id="iconNextFile" class="video-icon" title="Next Video"><img class="video-button" src="{$theme_dir}images/node-down-60.png"></span>
+				<span id="iconCamView" class="video-icon" title="Source View"><img class="video-button" id="videobtn" src="{$theme_dir}images/video-camera-60.png"></span>
+				<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
+				<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
+				<span class="view_controls">
+					<span class="inline nowrap player-btn video-icon">[Zoom: <input class="canv_slider" id="zoom_range" type="range" max="3" min=".4" step=".1" value="{$zoom}"><label id="zoom_range_label">{$zoom}x]</label></span>
+					<span class="inline nowrap player-btn video-icon">[Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°]</label></span>
+					<span class="inline nowrap player-btn video-icon">[Left/Right: <input class="canv_slider" id="default_y_view" type="range" max="360" min="0" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°]</label></span>
+					<span class="inline nowrap player-btn video-icon">[Rotate: <input class="canv_slider" id="default_x_view" type="range" max="360" min="0" step="1" value="{$default_x}"><label id="default_x_view_label">{$default_x}°]</label></span>
+				</span>
+				<span class="inline nowrap player-btn video-icon">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
+				<span class="video-icon"><select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select></span>
+			</span>
 		</menu>
 	</div>
 	<script src="lib/theta-view.js" type="module">
@@ -67,9 +64,11 @@
 
 		});
 
+		const container = document.getElementById("container");
 		const video  = document.getElementById('video');
 		const canvas_message = document.getElementById('canvas_message');
 		const progressBar  = document.getElementById('progress-bar');
+		const hide_controls = document.getElementById('iconShowHide');
 		const toggle = document.getElementById('iconPlayPause');
 		const skip_forward = document.getElementById('iconSeekBackward');
 		const skip_backward = document.getElementById('iconSeekForward');
@@ -178,14 +177,11 @@
 		}
 	   
 		function goFullScreen(){
-			var canvas = document.getElementById("container");
-			if(canvas.requestFullScreen)
-				canvas.requestFullScreen();
-			else if(canvas.webkitRequestFullScreen)
-				canvas.webkitRequestFullScreen();
-			else if(canvas.mozRequestFullScreen)
-				canvas.mozRequestFullScreen();
-			window.addEventListener( 'resize', onWindowResize, false );
+			if (!document.fullscreenElement) {
+				container.requestFullscreen();
+			} else {
+				document.exitFullscreen();
+			}
 		}
 	   
 		function selectBitrate() {
@@ -246,7 +242,7 @@
 		function toggleVideo() {
 			$('.video_default').toggleClass('active');
 			$('.canvas_default').toggleClass('hidden');
-			$('#controls').toggleClass('hidden');
+			$('.view_controls').toggleClass('hidden');
 		   var resizeEvent = window.document.createEvent('UIEvents'); 
 		   resizeEvent.initUIEvent('resize', true, false, window, 0); 
 		   window.dispatchEvent(resizeEvent);
@@ -260,6 +256,10 @@
 				cam_view.setAttribute('title', 'Source View');
 			}
 		}
+		
+		function HideControls() {
+			$('.all_controls').toggleClass('hidden');
+		}
 
 		// Event listeners
 		video.addEventListener('click', togglePlay);
@@ -270,6 +270,7 @@
 		video.addEventListener('ended',EndPrompt,false);
 
 		toggle.addEventListener('click', togglePlay);
+		hide_controls.addEventListener('click', HideControls);
 		skip_forward.addEventListener('click', skip);
 		skip_backward.addEventListener('click', skip);
 		file_forward.addEventListener('click', NextFile);

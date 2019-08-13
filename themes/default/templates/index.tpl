@@ -1,11 +1,9 @@
 {include file="header.tpl"}
-<div class="vidcontrols">
-	<div class="bt-menu-trigger">
-		<span></span>
-	</div>
-</div>
 {include file="menu.tpl"}
-<div id="content" class="content">
+<div id="content" class="content scroll">
+	<div style="margin-left: 25px;">
+		<span id="iconShowHideMenu" class="video-icon" title="Toggle Menu"><img src="{$theme_dir}images/close-pane-48.png" id="showhidemenubtn1" class="video-button menu_default_visible"/><img src="{$theme_dir}images/open-pane-48.png" id="showhidemenubtn2" class="video-button menu_default_hidden"/></span>
+	</div>
 	<br />
 	<table id="projectinfo" id="details">
 		<tr>
