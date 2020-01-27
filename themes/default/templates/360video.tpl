@@ -220,7 +220,7 @@
 			i = i - 1; // decrease by one
 			var PrevVideo = VideoList[i]
 			var PrevPath = PrevVideo.substring(0, PrevVideo.lastIndexOf("/"));
-			var PrevThumb = PrevPath + '/thumbnail.jpg'
+			var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.png'
 			var PrevLinkText = PrevVideo.replace('videos/', '');
 			
 			var i = VideoList.indexOf(CurrentVideo);
@@ -228,7 +228,7 @@
 			i = i % VideoList.length; // if we've gone too high, start from `0` again
 			var NextVideo = VideoList[i]		
 			var NextPath = NextVideo.substring(0, NextVideo.lastIndexOf("/"));
-			var NextThumb = NextPath + '/thumbnail.jpg'
+			var NextThumb = '{$website_root}' + NextPath + '/thumbnail.png'
 			var NextLinkText = NextVideo.replace('videos/', '');
 		
 		
