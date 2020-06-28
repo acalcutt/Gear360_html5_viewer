@@ -14,16 +14,16 @@
 				<span id="iconPlayPause" class="video-icon" title="Play"><img class="video-button" id="playbtn" src="{$theme_dir}images/play-60.png"></span>
 				<span id="iconSeekBackward" class="video-icon" data-skip="-10" title="10s Backward"><img class="video-button" src="{$theme_dir}images/rewind-60.png"></span>
 				<span id="iconSeekForward" class="video-icon" data-skip="10" title="10s Forward"><img class="video-button" src="{$theme_dir}images/fast-forward-60.png"></span>
-				<span id="iconPreviousFile" class="video-icon" title="Previous Video"><img class="video-button" src="{$theme_dir}images/node-up-60.png"></span>
-				<span id="iconNextFile" class="video-icon" title="Next Video"><img class="video-button" src="{$theme_dir}images/node-down-60.png"></span>
+				<span id="iconPreviousFile" class="video-icon" title="Previous File"><img class="video-button" src="{$theme_dir}images/node-up-60.png"></span>
+				<span id="iconNextFile" class="video-icon" title="Next File"><img class="video-button" src="{$theme_dir}images/node-down-60.png"></span>
 				<span id="iconCamView" class="video-icon" title="Source View"><img class="video-button" id="videobtn" src="{$theme_dir}images/video-camera-60.png"></span>
 				<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
 				<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
 				<span class="view_controls">
-					<span class="inline nowrap player-btn video-icon">[Zoom: <input class="canv_slider" id="zoom_range" type="range" max="3" min=".4" step=".1" value="{$zoom}"><label id="zoom_range_label">{$zoom}x]</label></span>
-					<span class="inline nowrap player-btn video-icon">[Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°]</label></span>
-					<span class="inline nowrap player-btn video-icon">[Left/Right: <input class="canv_slider" id="default_y_view" type="range" max="360" min="0" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°]</label></span>
-					<span class="inline nowrap player-btn video-icon">[Rotate: <input class="canv_slider" id="default_x_view" type="range" max="360" min="0" step="1" value="{$default_x}"><label id="default_x_view_label">{$default_x}°]</label></span>
+					<span class="inline nowrap player-btn video-icon">Zoom: <input class="canv_slider" id="zoom_range" type="range" max="3" min=".4" step=".1" value="{$zoom}"><label id="zoom_range_label">{$zoom}x</label></span>
+					<span class="inline nowrap player-btn video-icon">Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°</label></span>
+					<span class="inline nowrap player-btn video-icon">Left/Right: <input class="canv_slider" id="default_y_view" type="range" max="360" min="0" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°</label></span>
+					<span class="inline nowrap player-btn video-icon">Rotate: <input class="canv_slider" id="default_x_view" type="range" max="360" min="0" step="1" value="{$default_x}"><label id="default_x_view_label">{$default_x}°</label></span>
 				</span>
 				<span class="inline nowrap player-btn video-icon">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
 				<span class="video-icon"><select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select></span>
@@ -219,20 +219,30 @@
 			}
 			i = i - 1; // decrease by one
 			var PrevVideo = VideoList[i]
+			var PrevExt = PrevVideo.split('.').pop().toLowerCase();
 			var PrevPath = PrevVideo.substring(0, PrevVideo.lastIndexOf("/"));
-			var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.png'
+			var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.jpg'
 			var PrevLinkText = PrevVideo.replace('videos/', '');
+			if ((PrevExt == 'jpg') || (PrevExt == 'png')) {
+				var PrevThumb = PrevVideo
+			} else {
+				var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.jpg'
+			}
 			
 			var i = VideoList.indexOf(CurrentVideo);
 			i = i + 1; // increase i by one
 			i = i % VideoList.length; // if we've gone too high, start from `0` again
-			var NextVideo = VideoList[i]		
+			var NextVideo = VideoList[i]
+			var NextExt = NextVideo.split('.').pop().toLowerCase();
 			var NextPath = NextVideo.substring(0, NextVideo.lastIndexOf("/"));
-			var NextThumb = '{$website_root}' + NextPath + '/thumbnail.png'
 			var NextLinkText = NextVideo.replace('videos/', '');
-		
-		
-			canvas_message.innerHTML = '<div id="canvasNextFile" title="Next Video" class="canv_msg"><div>Next Video &rarr;<br />' + NextLinkText + '</div><div><img src="' + NextThumb + '" class="canv_thumb"></div></div><br /><div id="canvasPrevFile" title="Previous Video" class="canv_msg"><div>&larr; Previous Video<br />' + PrevLinkText + '</div><div><img src="' + PrevThumb + '" class="canv_thumb"></div></div>';
+			if ((NextExt == 'jpg') || (NextExt == 'png')) {
+				var NextThumb = NextVideo
+			} else {
+				var NextThumb = '{$website_root}' + NextPath + '/thumbnail.jpg'
+			}
+
+			canvas_message.innerHTML = '<div id="canvasNextFile" title="Next File" class="canv_msg"><div>Next File &rarr;<br />' + NextLinkText + '</div><div><img src="' + NextThumb + '" class="canv_thumb"></div></div><br /><div id="canvasPrevFile" title="Previous File" class="canv_msg"><div>&larr; Previous File<br />' + PrevLinkText + '</div><div><img src="' + PrevThumb + '" class="canv_thumb"></div></div>';
 			var canv_file_forward = document.getElementById('canvasNextFile');
 			var canvfile_backward = document.getElementById('canvasPrevFile');
 			canv_file_forward.addEventListener('click', NextFile);

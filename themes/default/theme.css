@@ -59,6 +59,16 @@ td {
 	left: 0;
 }
 
+.image_default {
+	width: 100%;
+	display: none;
+	pointer-events: none;
+}
+
+.image_default.active {
+	display: block;
+}
+
 .video_default {
 	width: 100%;
 	height: 100%;

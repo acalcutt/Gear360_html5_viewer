@@ -21,17 +21,17 @@
 */
 
 
-function php_file_tree($directory, $return_link, $extensions = array(), $file_list = array()) {
+function php_file_tree($directory, $return_link, $extensions = array(), $excludedfiles = array(), $file_list = array()) {
 	// Generates a valid XHTML list of all directories, sub-directories, and files in $directory
 	// Remove trailing slash
 	if( substr($directory, -1) == "/" ) $directory = substr($directory, 0, strlen($directory) - 1);
-	$arr_ret = php_file_tree_dir($directory, $return_link, $extensions, true, $file_list);
+	$arr_ret = php_file_tree_dir($directory, $return_link, $extensions, $excludedfiles, true, $file_list);
 	$code .= $arr_ret["data"];
 	$file_list = $arr_ret["file_list"];
 	return array("data"=>$code,"file_list"=>$file_list);
 }
 
-function php_file_tree_dir($directory, $return_link, $extensions = array(), $first_call = true, $file_list = array()) {
+function php_file_tree_dir($directory, $return_link, $extensions = array(), $excludedfiles = array(), $first_call = true, $file_list = array()) {
 	// Recursive function called by php_file_tree() to list directories/files
 	
 	// Get and sort directories/files
@@ -48,7 +48,7 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 	if( !empty($extensions) ) {
 		foreach( array_keys($file) as $key ) {
 			if( !is_dir("$directory/$file[$key]") ) {
-				$ext = substr($file[$key], strrpos($file[$key], ".") + 1); 
+				$ext = strtolower(substr($file[$key], strrpos($file[$key], ".") + 1)); 
 				if( !in_array($ext, $extensions) ) unset($file[$key]);
 			}
 		}
@@ -63,7 +63,7 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 		foreach( $file as $this_file ) {
 			if( $this_file != "." && $this_file != ".." ) {
 				if( is_dir("$directory/$this_file") ) {
-					$arr_ret = php_file_tree_dir("$directory/$this_file", $return_link ,$extensions, false, $file_list);
+					$arr_ret = php_file_tree_dir("$directory/$this_file", $return_link ,$extensions, $excludedfiles, false, $file_list);
 					$subdir = $arr_ret["data"];
 					$file_list = $arr_ret["file_list"];
 					if($subdir)
@@ -75,14 +75,17 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $fir
 						$php_file_tree .= "</li>";
 					}
 				} else {
-					$output_directory = 1;
-					// File
-					// Get extension (prepend 'ext-' to prevent invalid classes from extensions that begin with numbers)
-					$ext = "ext-" . substr($this_file, strrpos($this_file, ".") + 1); 
-					$link = str_replace("[link]", "$directory/" . urlencode($this_file), $return_link);
-					$id = base64_encode("li/$directory/".$this_file);
-					$php_file_tree .= "<li id=\"".$id."\" class=\"pft-file " . strtolower($ext) . "\"><a href=\"$link\">" . htmlspecialchars($this_file) . "</a></li>";
-					$file_list[] = "$directory/" . urlencode($this_file);
+					if(!in_array ($this_file , $excludedfiles))
+					{
+						$output_directory = 1;
+						// File
+						// Get extension (prepend 'ext-' to prevent invalid classes from extensions that begin with numbers)
+						$ext = "ext-" . substr($this_file, strrpos($this_file, ".") + 1); 
+						$link = str_replace("[link]", "$directory/" . urlencode($this_file), $return_link);
+						$id = base64_encode("li/$directory/".$this_file);
+						$php_file_tree .= "<li id=\"".$id."\" class=\"pft-file " . strtolower($ext) . "\"><a href=\"$link\">" . htmlspecialchars($this_file) . "</a></li>";
+						$file_list[] = "$directory/" . urlencode($this_file);
+					}
 				}
 			}
 		}

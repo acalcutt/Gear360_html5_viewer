@@ -19,7 +19,15 @@ if($video && file_exists ($video))
 	$smarty->assign('default_z',$z);
 	$smarty->assign('zoom',$zoom);
 	$smarty->assign('autoplay',$autoplay);
-	$smarty->display("360video.tpl");
+	$ext =  strtolower(pathinfo($video, PATHINFO_EXTENSION));
+	if($ext == "mpd")
+	{
+		$smarty->display("360video.tpl");
+	}
+	else if($ext == "jpg" || $ext == "png")
+	{
+		$smarty->display("360image.tpl");
+	}
 }
 else
 {
