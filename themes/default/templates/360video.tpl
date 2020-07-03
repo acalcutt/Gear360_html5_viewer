@@ -34,7 +34,7 @@
 	</script> 
 	<script>
 		var urlParams = new URLSearchParams(window.location.search);
-		var url = urlParams.get('video')
+		var url = urlParams.get('file')
 		var initialConfig = {
 			'streaming': {
 				'abr': {
@@ -79,7 +79,7 @@
 		const volume = document.getElementById('volume');
 		const playbackRate = document.getElementById('playbackRate');
 		const bitrate_list = document.getElementById('bitrate_list');
-		const CurrentVideo = '{$video_dash}';
+		const CurrentVideo = '{$file}';
 		const VideoList = {$file_list|json_encode}; 		
 
 		function togglePlay() {

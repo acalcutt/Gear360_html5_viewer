@@ -2,7 +2,7 @@
 {include file="menu.tpl"}
 <div class="col content" id="content">
 	<div id="container" ondragstart="return false;" ondrop="return false;">
-		<img id="image" class="image_default" src="{$video_dash}">
+		<img id="image" class="image_default" src="{$file}">
 		<canvas id="360canvas" class="canvas_default"></canvas>
 		<menu id="controls">
 			<span class="video-icon all_controls"><b>{$title}</b></span>
@@ -34,7 +34,7 @@
 		const file_backward = document.getElementById('iconPreviousFile');
 		const full_screen = document.getElementById('iconFullscreen');
 		const cam_view = document.getElementById('iconCamView');
-		const CurrentFile = '{$video_dash}';
+		const CurrentFile = '{$file}';
 		const FileList = {$file_list|json_encode}; 		
 
 		function NextFile() {

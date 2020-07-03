@@ -19,7 +19,7 @@ $smarty->assign('theme_dir',$root_website.'themes/'.$theme.'/');
 $allowed = array("mpd", "jpg", "png");
 $excluded = array("thumbnail.jpg","thumbnail.png");
 $file_list = [];
-$arr_ret = php_file_tree("videos/", "?video=[link]", $allowed, $excluded, $file_list);
+$arr_ret = php_file_tree("files/", "?file=[link]", $allowed, $excluded, $file_list);
 $video_menu = $arr_ret["data"];
 $file_list = $arr_ret["file_list"];
 
