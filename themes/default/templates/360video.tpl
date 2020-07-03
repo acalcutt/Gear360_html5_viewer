@@ -30,7 +30,7 @@
 			</span>
 		</menu>
 	</div>
-	<script src="lib/theta-view.js" type="module">
+	<script src="lib/360-view-video.js" type="module">
 	</script> 
 	<script>
 		var urlParams = new URLSearchParams(window.location.search);
