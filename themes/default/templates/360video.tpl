@@ -19,6 +19,7 @@
 				<span id="iconCamView" class="video-icon" title="Source View"><img class="video-button" id="videobtn" src="{$theme_dir}images/video-camera-60.png"></span>
 				<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
 				<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
+				<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.1" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1x</label></span>
 				<span class="view_controls">
 					<span class="inline nowrap player-btn video-icon">Zoom: <input class="canv_slider" id="zoom_range" type="range" max="3" min=".4" step=".1" value="{$zoom}"><label id="zoom_range_label">{$zoom}x</label></span>
 					<span class="inline nowrap player-btn video-icon">Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°</label></span>
@@ -79,8 +80,8 @@
 		const volume = document.getElementById('volume');
 		const playbackRate = document.getElementById('playbackRate');
 		const bitrate_list = document.getElementById('bitrate_list');
-		const CurrentVideo = '{$file}';
-		const VideoList = {$file_list|json_encode}; 		
+		const CurrentFile = '{$file}';
+		const FileList = {$file_list|json_encode}; 		
 
 		function togglePlay() {
 			const playState = video.paused ? 'play' : 'pause';
@@ -100,21 +101,21 @@
 		}
 
 		function NextFile() {
-			var i = VideoList.indexOf(CurrentVideo);
+			var i = FileList.indexOf(CurrentFile);
 			i = i + 1; // increase i by one
-			i = i % VideoList.length; // if we've gone too high, start from `0` again
-			var url = "{$website_root}index.php?video=" + VideoList[i]
+			i = i % FileList.length; // if we've gone too high, start from `0` again
+			var url = "{$website_root}index.php?file=" + FileList[i]
 			window.location.href = url
 
 		}
 		
 		function PrevFile() {
-			var i = VideoList.indexOf(CurrentVideo);
+			var i = FileList.indexOf(CurrentFile);
 			if (i === 0) { // i would become 0
-				i = VideoList.length; // so put it at the other end of the array
+				i = FileList.length; // so put it at the other end of the array
 			}
 			i = i - 1; // decrease by one
-			var url = "{$website_root}index.php?video=" + VideoList[i]
+			var url = "{$website_root}index.php?file=" + FileList[i]
 			window.location.href = url
 		}
 
@@ -213,31 +214,31 @@
 		}
 		
 		function EndPrompt() {
-			var i = VideoList.indexOf(CurrentVideo);
+			var i = FileList.indexOf(CurrentFile);
 			if (i === 0) { // i would become 0
-				i = VideoList.length; // so put it at the other end of the array
+				i = FileList.length; // so put it at the other end of the array
 			}
 			i = i - 1; // decrease by one
-			var PrevVideo = VideoList[i]
-			var PrevExt = PrevVideo.split('.').pop().toLowerCase();
-			var PrevPath = PrevVideo.substring(0, PrevVideo.lastIndexOf("/"));
+			var PrevFile = FileList[i]
+			var PrevExt = PrevFile.split('.').pop().toLowerCase();
+			var PrevPath = PrevFile.substring(0, PrevFile.lastIndexOf("/"));
 			var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.jpg'
-			var PrevLinkText = PrevVideo.replace('videos/', '');
+			var PrevLinkText = PrevFile.replace('files/', '');
 			if ((PrevExt == 'jpg') || (PrevExt == 'png')) {
-				var PrevThumb = PrevVideo
+				var PrevThumb = PrevFile
 			} else {
 				var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.jpg'
 			}
 			
-			var i = VideoList.indexOf(CurrentVideo);
+			var i = FileList.indexOf(CurrentFile);
 			i = i + 1; // increase i by one
-			i = i % VideoList.length; // if we've gone too high, start from `0` again
-			var NextVideo = VideoList[i]
-			var NextExt = NextVideo.split('.').pop().toLowerCase();
-			var NextPath = NextVideo.substring(0, NextVideo.lastIndexOf("/"));
-			var NextLinkText = NextVideo.replace('videos/', '');
+			i = i % FileList.length; // if we've gone too high, start from `0` again
+			var NextFile = FileList[i]
+			var NextExt = NextFile.split('.').pop().toLowerCase();
+			var NextPath = NextFile.substring(0, NextFile.lastIndexOf("/"));
+			var NextLinkText = NextFile.replace('files/', '');
 			if ((NextExt == 'jpg') || (NextExt == 'png')) {
-				var NextThumb = NextVideo
+				var NextThumb = NextFile
 			} else {
 				var NextThumb = '{$website_root}' + NextPath + '/thumbnail.jpg'
 			}

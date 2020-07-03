@@ -41,7 +41,7 @@
 			var i = FileList.indexOf(CurrentFile);
 			i = i + 1; // increase i by one
 			i = i % FileList.length; // if we've gone too high, start from `0` again
-			var url = "{$website_root}index.php?video=" + FileList[i]
+			var url = "{$website_root}index.php?file=" + FileList[i]
 			window.location.href = url
 
 		}
@@ -52,7 +52,7 @@
 				i = FileList.length; // so put it at the other end of the array
 			}
 			i = i - 1; // decrease by one
-			var url = "{$website_root}index.php?video=" + FileList[i]
+			var url = "{$website_root}index.php?file=" + FileList[i]
 			window.location.href = url
 		}
 	   
