@@ -19,7 +19,7 @@
 				<span id="iconCamView" class="video-icon" title="Source View"><img class="video-button" id="videobtn" src="{$theme_dir}images/video-camera-60.png"></span>
 				<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
 				<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
-				<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.1" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1x</label></span>
+				<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.1" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1.0x</label></span>
 				<span class="view_controls">
 					<span class="inline nowrap player-btn video-icon">Zoom: <input class="canv_slider" id="zoom_range" type="range" max="3" min=".4" step=".1" value="{$zoom}"><label id="zoom_range_label">{$zoom}x</label></span>
 					<span class="inline nowrap player-btn video-icon">Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°</label></span>
@@ -100,7 +100,7 @@
 			canvas_message.innerHTML = "";
 		}
 
-		function NextFile() {
+		function PlayNextFile() {
 			var i = FileList.indexOf(CurrentFile);
 			i = i + 1; // increase i by one
 			i = i % FileList.length; // if we've gone too high, start from `0` again
@@ -109,7 +109,7 @@
 
 		}
 		
-		function PrevFile() {
+		function PlayPrevFile() {
 			var i = FileList.indexOf(CurrentFile);
 			if (i === 0) { // i would become 0
 				i = FileList.length; // so put it at the other end of the array
@@ -246,8 +246,8 @@
 			canvas_message.innerHTML = '<div id="canvasNextFile" title="Next File" class="canv_msg"><div>Next File &rarr;<br />' + NextLinkText + '</div><div><img src="' + NextThumb + '" class="canv_thumb"></div></div><br /><div id="canvasPrevFile" title="Previous File" class="canv_msg"><div>&larr; Previous File<br />' + PrevLinkText + '</div><div><img src="' + PrevThumb + '" class="canv_thumb"></div></div>';
 			var canv_file_forward = document.getElementById('canvasNextFile');
 			var canvfile_backward = document.getElementById('canvasPrevFile');
-			canv_file_forward.addEventListener('click', NextFile);
-			canvfile_backward.addEventListener('click', PrevFile);
+			canv_file_forward.addEventListener('click', PlayNextFile);
+			canvfile_backward.addEventListener('click', PlayPrevFile);
 		}
 
 		function toggleVideo() {
@@ -284,8 +284,8 @@
 		hide_controls.addEventListener('click', HideControls);
 		skip_forward.addEventListener('click', skip);
 		skip_backward.addEventListener('click', skip);
-		file_forward.addEventListener('click', NextFile);
-		file_backward.addEventListener('click', PrevFile);
+		file_forward.addEventListener('click', PlayNextFile);
+		file_backward.addEventListener('click', PlayPrevFile);
 		full_screen.addEventListener('click', goFullScreen);
 		cam_view.addEventListener('click', toggleVideo);
 		volume.addEventListener('change', rangeUpdate);

@@ -37,7 +37,7 @@
 		const CurrentFile = '{$file}';
 		const FileList = {$file_list|json_encode}; 		
 
-		function NextFile() {
+		function PlayNextFile() {
 			var i = FileList.indexOf(CurrentFile);
 			i = i + 1; // increase i by one
 			i = i % FileList.length; // if we've gone too high, start from `0` again
@@ -46,7 +46,7 @@
 
 		}
 		
-		function PrevFile() {
+		function PlayPrevFile() {
 			var i = FileList.indexOf(CurrentFile);
 			if (i === 0) { // i would become 0
 				i = FileList.length; // so put it at the other end of the array
@@ -89,8 +89,8 @@
 		// Event listeners
 
 		hide_controls.addEventListener('click', HideControls);
-		file_forward.addEventListener('click', NextFile);
-		file_backward.addEventListener('click', PrevFile);
+		file_forward.addEventListener('click', PlayNextFile);
+		file_backward.addEventListener('click', PlayPrevFile);
 		full_screen.addEventListener('click', goFullScreen);
 		cam_view.addEventListener('click', toggleImage);
 
