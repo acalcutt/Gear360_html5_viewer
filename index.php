@@ -19,14 +19,34 @@ if($file && file_exists ($file))
 	$smarty->assign('default_z',$z);
 	$smarty->assign('zoom',$zoom);
 	$smarty->assign('autoplay',$autoplay);
-	$ext =  strtolower(pathinfo($file, PATHINFO_EXTENSION));
-	if($ext == "mpd")
-	{
-		$smarty->display("360video.tpl");
+
+	
+	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+	$filename = strtolower(pathinfo($file, PATHINFO_FILENAME)); // Get filename without ANY extension
+	$isEquirectangular = (strpos($filename, '.eq') !== false); //Check to see if the extension contains .eq
+
+	// Check for video files
+	if ($ext == "mpd") {
+		if ($isEquirectangular) {
+			$smarty->assign("isEquirectangular", true); // Can pass to the template if needed
+			$smarty->display("360video.eq.tpl");
+		} else {
+			$smarty->assign("isEquirectangular", false);
+			$smarty->display("360video.tpl");
+		}
 	}
-	else if($ext == "jpg" || $ext == "png")
-	{
-		$smarty->display("360image.tpl");
+	// Check for image files
+	elseif ($ext == "jpg" || $ext == "png") {
+		if ($isEquirectangular) {
+			$smarty->assign("isEquirectangular", true);
+			$smarty->display("360image.eq.tpl");
+		} else {
+			$smarty->assign("isEquirectangular", false);
+			$smarty->display("360image.tpl");
+		}
+	}
+	else {
+		$smarty->display("index.tpl");
 	}
 }
 else
