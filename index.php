@@ -20,10 +20,21 @@ if($file && file_exists ($file))
 	$smarty->assign('zoom',$zoom);
 	$smarty->assign('autoplay',$autoplay);
 
-	
 	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 	$filename = strtolower(pathinfo($file, PATHINFO_FILENAME)); // Get filename without ANY extension
-	$isEquirectangular = (strpos($filename, '.eq') !== false) || (strpos($file, 'files/Insta360/') === 0); //Check to see if the extension contains .eq or if the path starts with /Insta360/ (which indicates it is equirectangular)
+
+	$isEquirectangular = (strpos($filename, '.eq') !== false);  // Check for .eq in filename
+
+	// Check if the file path starts with any of the configured equirectangular directories
+	if (!$isEquirectangular) {
+		foreach ($equirectangular_directories as $dir) {
+			if (strpos($file, $dir) === 0) {
+				$isEquirectangular = true;
+				break; // No need to check other directories if one matches
+			}
+		}
+	}
+
 
 	// Check for video files
 	if ($ext == "mpd") {
@@ -52,4 +63,5 @@ if($file && file_exists ($file))
 else
 {
 	$smarty->display("index.tpl");
-}	
+}
+?>
