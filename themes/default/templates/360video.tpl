@@ -52,17 +52,39 @@
 		player.setAutoPlay(true);
 		
 		player.on("streamInitialized", function () {
-			var availableBitrates = { menuType: 'bitrate' };
-			availablevideoBitrates = player.getBitrateInfoListFor('video') || [];
+			let availablevideoBitrates = [];
 
-			availablevideoBitrates.forEach(function(Bitrate) {
-				var sel = document.getElementById('bitrate_list');
-				var opt = document.createElement('option');
-				opt.appendChild( document.createTextNode(Number((Bitrate.bitrate / 1000000).toFixed(1)) + ' Mbps') );
-				opt.value = Math.round(Bitrate.bitrate / 1000) + 1; 
-				sel.appendChild(opt);
+			if (player.getRepresentationsByType) {
+				availablevideoBitrates = player.getRepresentationsByType('video') || [];
+			} else {
+				console.warn("getRepresentationsByType is not available on the player object.");
+				return;
+			}
+
+			const sel = document.getElementById('bitrate_list');
+			if (!sel) {
+				console.error("bitrate_list select element not found!");
+				return;
+			}
+
+			availablevideoBitrates.forEach(bitrateInfo => {
+				if (typeof bitrateInfo === 'object' && bitrateInfo !== null && typeof bitrateInfo.bitrateInKbit === 'number') {
+					const bitrateKbps = bitrateInfo.bitrateInKbit;
+					console.log(bitrateKbps);
+					const bitrateMbps = Number((bitrateKbps / 1000).toFixed(1));
+					const opt = document.createElement('option');
+					opt.appendChild(document.createTextNode(bitrateMbps + 'Mbps'));
+					opt.value = Math.round(bitrateKbps);
+					sel.appendChild(opt);
+				} else {
+					console.warn("Invalid bitrate information:", bitrateInfo);
+				}
 			});
 
+			sel.addEventListener('change', (event) => {
+				const selectedValue = event.target.value;
+				console.log('Selected Bitrate:', selectedValue, 'kbps');
+			});
 		});
 
 		const container = document.getElementById("container");

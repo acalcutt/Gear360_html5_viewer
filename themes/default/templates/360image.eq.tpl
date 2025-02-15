@@ -16,9 +16,9 @@
 				<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
 				<span class="view_controls">
 					<span class="inline nowrap player-btn video-icon">Zoom: <input class="canv_slider" id="zoom_range" type="range" max="3" min=".4" step=".1" value="{$zoom}"><label id="zoom_range_label">{$zoom}x</label></span>
-					<span class="inline nowrap player-btn video-icon">Up/Down: <input class="canv_slider" id="z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°</label></span>
-					<span class="inline nowrap player-btn video-icon">Left/Right: <input class="canv_slider" id="y_view" type="range" max="360" min="0" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°</label></span>
-					<span class="inline nowrap player-btn video-icon">Rotate: <input class="canv_slider" id="x_view" type="range" max="360" min="0" step="1" value="{$default_x}"><label id="default_x_view_label">{$default_x}°</label></span>
+					<span class="inline nowrap player-btn video-icon">Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°</label></span>
+					<span class="inline nowrap player-btn video-icon">Left/Right: <input class="canv_slider" id="default_y_view" type="range" max="360" min="0" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°</label></span>
+					<span class="inline nowrap player-btn video-icon">Rotate: <input class="canv_slider" id="default_x_view" type="range" max="360" min="0" step="1" value="{$default_x}"><label id="default_x_view_label">{$default_x}°</label></span>
 				</span>
 			</span>
 		</menu>

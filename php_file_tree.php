@@ -69,8 +69,9 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $exc
 					if($subdir)
 					{
 						// Directory
+						$link = str_replace("[link]", "$directory/$this_file", $return_link);
 						$id = base64_encode("li/$directory/".$this_file);
-						$php_file_tree .= "<li id=\"".$id."\" class=\"pft-directory\"><a href=\"#\">" . htmlspecialchars($this_file) . "</a>";
+						$php_file_tree .= "<li id=\"".$id."\" class=\"pft-directory\"><a href=\"$link\">" . htmlspecialchars($this_file) . "</a>";
 						$php_file_tree .= $subdir;
 						$php_file_tree .= "</li>";
 					}
