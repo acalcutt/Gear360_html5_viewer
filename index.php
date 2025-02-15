@@ -23,7 +23,7 @@ if($file && file_exists ($file))
 	
 	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 	$filename = strtolower(pathinfo($file, PATHINFO_FILENAME)); // Get filename without ANY extension
-	$isEquirectangular = (strpos($filename, '.eq') !== false); //Check to see if the extension contains .eq
+	$isEquirectangular = (strpos($filename, '.eq') !== false) || (strpos($file, 'files/Insta360/') === 0); //Check to see if the extension contains .eq or if the path starts with /Insta360/ (which indicates it is equirectangular)
 
 	// Check for video files
 	if ($ext == "mpd") {
