@@ -20,7 +20,7 @@
 				<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
 				<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
 				<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.1" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1.0x</label></span>
-				<span class="view_controls hidden">
+				<span class="view_controls">
 					<span class="inline nowrap player-btn video-icon">Zoom: <input class="canv_slider" id="zoom_range" type="range" max="3" min=".4" step=".1" value="{$zoom}"><label id="zoom_range_label">{$zoom}x</label></span>
 					<span class="inline nowrap player-btn video-icon">Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°</label></span>
 					<span class="inline nowrap player-btn video-icon">Left/Right: <input class="canv_slider" id="default_y_view" type="range" max="360" min="0" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°</label></span>
@@ -31,28 +31,26 @@
 			</span>
 		</menu>
 	</div>
-	<script src="lib/360-view-video-eq.js" type="module"></script>
+	<script src="lib/dash.all.debug.js"></script>
+	<script src="{if $isEquirectangular eq 1}lib/360-view-video-eq.js{else}lib/360-view-video.js{/if}" type="module"></script>
 	<script>
 		var urlParams = new URLSearchParams(window.location.search);
-		var url = urlParams.get('file');
+		var url = urlParams.get('file')
 		var initialConfig = {
 			'streaming': {
 				'abr': {
 					limitBitrateByPortal: false,
 					initialBitrate: { audio: {$initialAudioBitrate}, video: {$initialVideoBitrate} },
 					autoSwitchBitrate: { audio: true, video: true }
-				},
-				buffer: {
-					fastSwitchEnabled: true
 				}
 			}
-		};
-
+		}
+		
 		var player = dashjs.MediaPlayer().create();
 		player.updateSettings(initialConfig);
 		player.initialize(document.querySelector("#video"), url, true);
 		player.setAutoPlay(true);
-
+		
 		player.on("streamInitialized", function () {
 			let availablevideoBitrates = [];
 
@@ -90,7 +88,7 @@
 		});
 
 		const container = document.getElementById("container");
-		const video = document.getElementById('video');
+		const video  = document.getElementById('video');
 		const canvas_message = document.getElementById('canvas_message');
 		const progressBar = document.getElementById('progress-bar');
 		const hide_controls = document.getElementById('iconShowHide');
@@ -126,18 +124,18 @@
 
 		function PlayNextFile() {
 			var i = FileList.indexOf(CurrentFile);
-			i = i + 1;
-			i = i % FileList.length;
+			i = i + 1; // increase i by one
+			i = i % FileList.length; // if we've gone too high, start from `0` again
 			var url = "{$website_root}index.php?file=" + FileList[i];
 			window.location.href = url;
 		}
 
 		function PlayPrevFile() {
 			var i = FileList.indexOf(CurrentFile);
-			if (i === 0) {
-				i = FileList.length;
+			if (i === 0) { // i would become 0
+				i = FileList.length; // so put it at the other end of the array
 			}
-			i = i - 1;
+			i = i - 1; // decrease by one
 			var url = "{$website_root}index.php?file=" + FileList[i];
 			window.location.href = url;
 		}
@@ -154,14 +152,18 @@
 		}
 
 		function updateProgressBar() {
+			// Work out how much of the media has played via the duration and currentTime parameters
 			var percentage = Math.floor((100 / video.duration) * video.currentTime);
+			// Update the progress bar's value
 			progressBar.value = percentage;
+			// Update the progress bar's text (for browsers that don't support the progress element)
 			progressBar.innerHTML = percentage + '% played';
+			// Update Text Labels
 			updateProgressTime(this.currentTime, this.duration);
 		}
-
+		
 		function updateProgressTime(currentTime, duration){
-			$("#current").text(formatTime(currentTime));
+			$("#current").text(formatTime(currentTime)); //Change #current to currentTime
 			$("#duration").text(formatTime(duration));
 		}
 
@@ -201,9 +203,11 @@
 			}
 		}
 
+	   
 		function selectBitrate() {
 			var sel_bitrate = bitrate_list.options[bitrate_list.selectedIndex].value;
-			if(sel_bitrate == "auto") {
+			if(sel_bitrate == "auto")
+			{
 				var bitConfig = {
 					'streaming': {
 						'abr': {
@@ -211,9 +215,11 @@
 							minBitrate: { audio: -1, video: -1 },
 						}
 					}
-				};
+				}
 				player.updateSettings(bitConfig);
-			} else {
+			}
+			else
+			{
 				var bitConfig = {
 					'streaming': {
 						'abr': {
@@ -221,17 +227,39 @@
 							minBitrate: { audio: -1, video: sel_bitrate },
 						}
 					}
-				};
+				}
 				player.updateSettings(bitConfig);
 			}
+		}
+		
+		function toggleVideo() {
+			$('.video_default').toggleClass('active');
+			$('.canvas_default').toggleClass('hidden');
+			$('.view_controls').toggleClass('hidden');
+			var resizeEvent = window.document.createEvent('UIEvents');
+			resizeEvent.initUIEvent('resize', true, false, window, 0);
+			window.dispatchEvent(resizeEvent);
+
+			var videobtn = document.getElementById('videobtn');
+			if (video.classList.contains("active")) {
+				videobtn.src = "{$theme_dir}images/panorama-60.png";
+				cam_view.setAttribute('title', '360 View');
+			} else {
+				videobtn.src = "{$theme_dir}images/video-camera-60.png";
+				cam_view.setAttribute('title', 'Source View');
+			}
+		}
+
+		function HideControls() {
+			$('.all_controls').toggleClass('hidden');
 		}
 
 		function EndPrompt() {
 			var i = FileList.indexOf(CurrentFile);
-			if (i === 0) {
-				i = FileList.length;
+			if (i === 0) { // i would become 0
+				i = FileList.length; // so put it at the other end of the array
 			}
-			i = i - 1;
+			i = i - 1; // decrease by one
 			var PrevFile = FileList[i];
 			var PrevExt = PrevFile.split('.').pop().toLowerCase();
 			var PrevPath = PrevFile.substring(0, PrevFile.lastIndexOf("/"));
@@ -245,8 +273,8 @@
 			}
 
 			var i = FileList.indexOf(CurrentFile);
-			i = i + 1;
-			i = i % FileList.length;
+			i = i + 1; // increase i by one
+			i = i % FileList.length; // if we've gone too high, start from `0` again
 			var NextFile = FileList[i];
 			var NextExt = NextFile.split('.').pop().toLowerCase();
 			var NextPath = NextFile.substring(0, NextFile.lastIndexOf("/"));
@@ -263,28 +291,6 @@
 			var canvfile_backward = document.getElementById('canvasPrevFile');
 			canv_file_forward.addEventListener('click', PlayNextFile);
 			canvfile_backward.addEventListener('click', PlayPrevFile);
-		}
-
-		function toggleVideo() {
-			$('.video_default').toggleClass('active');
-			$('.canvas_default').toggleClass('hidden');
-			$('.view_controls').toggleClass('hidden');
-		   var resizeEvent = window.document.createEvent('UIEvents'); 
-		   resizeEvent.initUIEvent('resize', true, false, window, 0); 
-		   window.dispatchEvent(resizeEvent);
-		   
-		   	var videobtn = document.getElementById('videobtn');
-			if (video.classList.contains("active")) {
-				videobtn.src = "{$theme_dir}images/panorama-60.png";
-				cam_view.setAttribute('title', '360 View');
-			} else {
-				videobtn.src = "{$theme_dir}images/video-camera-60.png";
-				cam_view.setAttribute('title', 'Source View');
-			}
-		}
-
-		function HideControls() {
-			$('.all_controls').toggleClass('hidden');
 		}
 
 		// Event listeners

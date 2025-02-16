@@ -23,7 +23,7 @@ if($file && file_exists ($file))
 	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 	$filename = strtolower(pathinfo($file, PATHINFO_FILENAME)); // Get filename without ANY extension
 
-	$isEquirectangular = (strpos($filename, '.eq') !== false);  // Check for .eq in filename
+	$isEquirectangular = (strpos($filename, '.eq') !== false); // Check for .eq in filename
 
 	// Check if the file path starts with any of the configured equirectangular directories
 	if (!$isEquirectangular) {
@@ -35,26 +35,22 @@ if($file && file_exists ($file))
 		}
 	}
 
+	if ($isEquirectangular) {
+		$smarty->assign("isEquirectangular", true);
+	} else {
+		$smarty->assign("isEquirectangular", false);
+	}
 
 	// Check for video files
-	if ($ext == "mpd") {
-		if ($isEquirectangular) {
-			$smarty->assign("isEquirectangular", true); // Can pass to the template if needed
-			$smarty->display("360video.eq.tpl");
-		} else {
-			$smarty->assign("isEquirectangular", false);
-			$smarty->display("360video.tpl");
-		}
+	if ($ext == "mpd") {  // **Check for DASH matifest **
+		$smarty->display("360video.dash.tpl");
+	}
+	elseif ($ext == "m3u8") {  // **Check for HLS master playlist**
+		$smarty->display("360video.hls.tpl");
 	}
 	// Check for image files
 	elseif ($ext == "jpg" || $ext == "png") {
-		if ($isEquirectangular) {
-			$smarty->assign("isEquirectangular", true);
-			$smarty->display("360image.eq.tpl");
-		} else {
-			$smarty->assign("isEquirectangular", false);
-			$smarty->display("360image.tpl");
-		}
+		$smarty->display("360image.tpl");
 	}
 	else {
 		$smarty->display("index.tpl");

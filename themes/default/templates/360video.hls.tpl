@@ -27,70 +27,66 @@
 					<span class="inline nowrap player-btn video-icon">Rotate: <input class="canv_slider" id="default_x_view" type="range" max="360" min="0" step="1" value="{$default_x}"><label id="default_x_view_label">{$default_x}°</label></span>
 				</span>
 				<span class="inline nowrap player-btn video-icon">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
-				<span class="video-icon"><select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select></span>
 			</span>
 		</menu>
 	</div>
-	<script src="lib/360-view-video.js" type="module">
-	</script> 
+	<script src="lib/hls.min.js"></script>
+	<script src="{if $isEquirectangular eq 1}lib/360-view-video-eq.js{else}lib/360-view-video.js{/if}" type="module"></script>
 	<script>
-		var urlParams = new URLSearchParams(window.location.search);
-		var url = urlParams.get('file')
-		var initialConfig = {
-			'streaming': {
-				'abr': {
-					limitBitrateByPortal: false,
-					initialBitrate: { audio: {$initialAudioBitrate}, video: {$initialVideoBitrate} },
-					autoSwitchBitrate: { audio: true, video: true }
+		var video = document.getElementById('video');
+		var initialVideoBitrate = {$initialVideoBitrate|default:0}; // Get initial bitrate from Smarty, default to 0 if not set
+		var hls = null;
+		if (video.canPlayType('application/vnd.apple.mpegurl')) {
+			video.src = '{$file}';
+		} else if (Hls.isSupported()) {
+			hls = new Hls();
+			hls.loadSource('{$file}');  {* Load the HLS manifest *}
+			hls.attachMedia(video);
+
+			hls.on(Hls.Events.MANIFEST_PARSED, function() {
+			  // Find the closest level index
+			  let bestLevel = -1;
+			  let bestLevelDiff = Infinity;
+
+			  for (let i = 0; i < hls.levels.length; i++) {
+				const level = hls.levels[i];
+				const bitrate = level.bitrate;
+				const diff = Math.abs(bitrate - initialVideoBitrate);
+				console.log('level:' + i + ' bitrate:' + bitrate + ' diff:' + diff);
+				if (diff < bestLevelDiff && bitrate <= initialVideoBitrate) {
+				  bestLevelDiff = diff;
+				  bestLevel = i;
 				}
-			}
+			  }
+
+				//Now config code for start level and play video
+			  if(bestLevel != -1) {
+				hls.startLevel = bestLevel;
+				console.log('bestLevel:' + bestLevel);
+			  }
+
+				video.play();
+			});
+
+			hls.on(Hls.Events.ERROR, function(event, data) {
+				console.warn("HLS.js error:", data);
+				// Try fallback if HLS.js fails
+				video.src = '{$video_fallback}';
+				video.type = 'video/mp4';  // Specify the correct MIME type
+				video.play();
+			});
+		} else {
+			// Use the MP4 fallback source if HLS is not supported at all
+			video.src = '{$video_fallback}';
+			video.type = 'video/mp4';  // Specify the correct MIME type
+			video.play();
 		}
-		
-		var player = dashjs.MediaPlayer().create();
-		player.updateSettings(initialConfig);
-		player.initialize(document.querySelector("#video"), url, true);
-		player.setAutoPlay(true);
-		
-		player.on("streamInitialized", function () {
-			let availablevideoBitrates = [];
 
-			if (player.getRepresentationsByType) {
-				availablevideoBitrates = player.getRepresentationsByType('video') || [];
-			} else {
-				console.warn("getRepresentationsByType is not available on the player object.");
-				return;
-			}
-
-			const sel = document.getElementById('bitrate_list');
-			if (!sel) {
-				console.error("bitrate_list select element not found!");
-				return;
-			}
-
-			availablevideoBitrates.forEach(bitrateInfo => {
-				if (typeof bitrateInfo === 'object' && bitrateInfo !== null && typeof bitrateInfo.bitrateInKbit === 'number') {
-					const bitrateKbps = bitrateInfo.bitrateInKbit;
-					console.log(bitrateKbps);
-					const bitrateMbps = Number((bitrateKbps / 1000).toFixed(1));
-					const opt = document.createElement('option');
-					opt.appendChild(document.createTextNode(bitrateMbps + 'Mbps'));
-					opt.value = Math.round(bitrateKbps);
-					sel.appendChild(opt);
-				} else {
-					console.warn("Invalid bitrate information:", bitrateInfo);
-				}
-			});
-
-			sel.addEventListener('change', (event) => {
-				const selectedValue = event.target.value;
-				console.log('Selected Bitrate:', selectedValue, 'kbps');
-			});
-		});
-
+		var urlParams = new URLSearchParams(window.location.search);
+		var url = urlParams.get('file');
 		const container = document.getElementById("container");
-		const video  = document.getElementById('video');
 		const canvas_message = document.getElementById('canvas_message');
-		const progressBar  = document.getElementById('progress-bar');
+		const progressBar = document.getElementById('progress-bar');
 		const hide_controls = document.getElementById('iconShowHide');
 		const toggle = document.getElementById('iconPlayPause');
 		const skip_forward = document.getElementById('iconSeekBackward');
@@ -101,9 +97,8 @@
 		const cam_view = document.getElementById('iconCamView');
 		const volume = document.getElementById('volume');
 		const playbackRate = document.getElementById('playbackRate');
-		const bitrate_list = document.getElementById('bitrate_list');
 		const CurrentFile = '{$file}';
-		const FileList = {$file_list|json_encode}; 		
+		const FileList = {$file_list|json_encode};
 
 		function togglePlay() {
 			const playState = video.paused ? 'play' : 'pause';
@@ -112,7 +107,7 @@
 
 		function updateButton() {
 			image = document.getElementById('playbtn');
-			if (player.isPaused()) {
+			if (video.paused) {
 				image.src = "{$theme_dir}images/play-60.png";
 				toggle.setAttribute('title', 'Play');
 			} else {
@@ -126,25 +121,23 @@
 			var i = FileList.indexOf(CurrentFile);
 			i = i + 1; // increase i by one
 			i = i % FileList.length; // if we've gone too high, start from `0` again
-			var url = "{$website_root}index.php?file=" + FileList[i]
-			window.location.href = url
-
+			var url = "{$website_root}index.php?file=" + FileList[i];
+			window.location.href = url;
 		}
-		
+
 		function PlayPrevFile() {
 			var i = FileList.indexOf(CurrentFile);
 			if (i === 0) { // i would become 0
 				i = FileList.length; // so put it at the other end of the array
 			}
 			i = i - 1; // decrease by one
-			var url = "{$website_root}index.php?file=" + FileList[i]
-			window.location.href = url
+			var url = "{$website_root}index.php?file=" + FileList[i];
+			window.location.href = url;
 		}
 
 		function skip() {
 			video.currentTime += parseFloat(this.dataset.skip);
 		}
-		
 
 		function rangeUpdate() {
 			video[this.name] = this.value;
@@ -168,10 +161,10 @@
 			$("#current").text(formatTime(currentTime)); //Change #current to currentTime
 			$("#duration").text(formatTime(duration));
 		}
-		
+
 		function formatTime(seconds) {
 			if(isNaN(seconds)) {
-				return "00:00"
+				return "00:00";
 			} else {
 				var date = new Date(null);
 				date.setSeconds(seconds);
@@ -181,15 +174,13 @@
 				} else {
 					var result = date.toISOString().substr(11, 8);
 				}
-				return result
+				return result;
 			}
 		}
-	   
+
 		function seek(e) {
 			progress_val = e / 100;
-			//var percent = e.offsetX / this.offsetWidth;
 			video.currentTime = progress_val * video.duration;
-			//progressBar.value = Math.floor(e / 100);
 			progressBar.innerHTML = progressBar.value + '% played';
 			canvas_message.innerHTML = "";
 		}
@@ -198,7 +189,7 @@
 			const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
 			video.currentTime = scrubTime;
 		}
-	   
+
 		function goFullScreen(){
 			if (!document.fullscreenElement) {
 				container.requestFullscreen();
@@ -206,81 +197,16 @@
 				document.exitFullscreen();
 			}
 		}
-	   
-		function selectBitrate() {
-			var sel_bitrate = bitrate_list.options[bitrate_list.selectedIndex].value;
-			if(sel_bitrate == "auto")
-			{
-				var bitConfig = {
-					'streaming': {
-						'abr': {
-							maxBitrate: { audio: -1, video: -1 },
-							minBitrate: { audio: -1, video: -1 },
-						}
-					}
-				}
-				player.updateSettings(bitConfig);
-			}
-			else
-			{
-				var bitConfig = {
-					'streaming': {
-						'abr': {
-							maxBitrate: { audio: -1, video: sel_bitrate },
-							minBitrate: { audio: -1, video: sel_bitrate },
-						}
-					}
-				}
-				player.updateSettings(bitConfig);
-			}
-		}
-		
-		function EndPrompt() {
-			var i = FileList.indexOf(CurrentFile);
-			if (i === 0) { // i would become 0
-				i = FileList.length; // so put it at the other end of the array
-			}
-			i = i - 1; // decrease by one
-			var PrevFile = FileList[i]
-			var PrevExt = PrevFile.split('.').pop().toLowerCase();
-			var PrevPath = PrevFile.substring(0, PrevFile.lastIndexOf("/"));
-			var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.jpg'
-			var PrevLinkText = PrevFile.replace('files/', '');
-			if ((PrevExt == 'jpg') || (PrevExt == 'png')) {
-				var PrevThumb = PrevFile
-			} else {
-				var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.jpg'
-			}
-			
-			var i = FileList.indexOf(CurrentFile);
-			i = i + 1; // increase i by one
-			i = i % FileList.length; // if we've gone too high, start from `0` again
-			var NextFile = FileList[i]
-			var NextExt = NextFile.split('.').pop().toLowerCase();
-			var NextPath = NextFile.substring(0, NextFile.lastIndexOf("/"));
-			var NextLinkText = NextFile.replace('files/', '');
-			if ((NextExt == 'jpg') || (NextExt == 'png')) {
-				var NextThumb = NextFile
-			} else {
-				var NextThumb = '{$website_root}' + NextPath + '/thumbnail.jpg'
-			}
-
-			canvas_message.innerHTML = '<div id="canvasNextFile" title="Next File" class="canv_msg"><div>Next File &rarr;<br />' + NextLinkText + '</div><div><img src="' + NextThumb + '" class="canv_thumb"></div></div><br /><div id="canvasPrevFile" title="Previous File" class="canv_msg"><div>&larr; Previous File<br />' + PrevLinkText + '</div><div><img src="' + PrevThumb + '" class="canv_thumb"></div></div>';
-			var canv_file_forward = document.getElementById('canvasNextFile');
-			var canvfile_backward = document.getElementById('canvasPrevFile');
-			canv_file_forward.addEventListener('click', PlayNextFile);
-			canvfile_backward.addEventListener('click', PlayPrevFile);
-		}
 
 		function toggleVideo() {
 			$('.video_default').toggleClass('active');
 			$('.canvas_default').toggleClass('hidden');
 			$('.view_controls').toggleClass('hidden');
-		   var resizeEvent = window.document.createEvent('UIEvents'); 
-		   resizeEvent.initUIEvent('resize', true, false, window, 0); 
-		   window.dispatchEvent(resizeEvent);
-		   
-		   	var videobtn = document.getElementById('videobtn');
+			var resizeEvent = window.document.createEvent('UIEvents');
+			resizeEvent.initUIEvent('resize', true, false, window, 0);
+			window.dispatchEvent(resizeEvent);
+
+			var videobtn = document.getElementById('videobtn');
 			if (video.classList.contains("active")) {
 				videobtn.src = "{$theme_dir}images/panorama-60.png";
 				cam_view.setAttribute('title', '360 View');
@@ -289,9 +215,48 @@
 				cam_view.setAttribute('title', 'Source View');
 			}
 		}
-		
+
 		function HideControls() {
 			$('.all_controls').toggleClass('hidden');
+		}
+
+		function EndPrompt() {
+			var i = FileList.indexOf(CurrentFile);
+			if (i === 0) { // i would become 0
+				i = FileList.length; // so put it at the other end of the array
+			}
+			i = i - 1; // decrease by one
+			var PrevFile = FileList[i];
+			var PrevExt = PrevFile.split('.').pop().toLowerCase();
+			var PrevPath = PrevFile.substring(0, PrevFile.lastIndexOf("/"));
+			var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.jpg';
+			var PrevLinkText = PrevFile.replace('files/', '');
+
+			if ((PrevExt == 'jpg') || (PrevExt == 'png')) {
+				var PrevThumb = PrevFile;
+			} else {
+				var PrevThumb = '{$website_root}' + PrevPath + '/thumbnail.jpg';
+			}
+
+			var i = FileList.indexOf(CurrentFile);
+			i = i + 1; // increase i by one
+			i = i % FileList.length; // if we've gone too high, start from `0` again
+			var NextFile = FileList[i];
+			var NextExt = NextFile.split('.').pop().toLowerCase();
+			var NextPath = NextFile.substring(0, NextFile.lastIndexOf("/"));
+			var NextLinkText = NextFile.replace('files/', '');
+
+			if ((NextExt == 'jpg') || (NextExt == 'png')) {
+				var NextThumb = NextFile;
+			} else {
+				var NextThumb = '{$website_root}' + NextPath + '/thumbnail.jpg';
+			}
+
+			canvas_message.innerHTML = '<div id="canvasNextFile" title="Next File" class="canv_msg"><div>Next File &rarr;<br />' + NextLinkText + '</div><div><img src="' + NextThumb + '" class="canv_thumb"></div></div><br /><div id="canvasPrevFile" title="Previous File" class="canv_msg"><div>&larr; Previous File<br />' + PrevLinkText + '</div><div><img src="' + PrevThumb + '" class="canv_thumb"></div></div>';
+			var canv_file_forward = document.getElementById('canvasNextFile');
+			var canvfile_backward = document.getElementById('canvasPrevFile');
+			canv_file_forward.addEventListener('click', PlayNextFile);
+			canvfile_backward.addEventListener('click', PlayPrevFile);
 		}
 
 		// Event listeners
@@ -314,8 +279,6 @@
 		volume.addEventListener('mousemove', rangeUpdate);
 		playbackRate.addEventListener('change', rangeUpdate);
 		playbackRate.addEventListener('mousemove', rangeUpdate);
-
-		bitrate_list.addEventListener('change', selectBitrate);
 
 		let mousedown = false;
 	</script>

@@ -16,8 +16,8 @@ $smarty->cache_dir    = SMARTY_ROOT.'cache/';
 $smarty->assign('website_root',$root_website);
 $smarty->assign('theme_dir',$root_website.'themes/'.$theme.'/');
 
-$allowed = array("mpd", "jpg", "png");
-$excluded = array("thumbnail.jpg","thumbnail.png");
+$allowed = array("m3u8", "mpd", "jpg", "png");
+$excluded = array("thumbnail.jpg","thumbnail.png","stream.m3u8");
 $file_list = [];
 $arr_ret = php_file_tree("files/", "?file=[link]", $allowed, $excluded, $file_list);
 $video_menu = $arr_ret["data"];

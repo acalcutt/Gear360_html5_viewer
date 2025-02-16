@@ -23,7 +23,7 @@
 			</span>
 		</menu>
 	</div>
-	<script src="lib/360-view-image.js" type="module">
+	<script src="{if $isEquirectangular eq 1}lib/360-view-image-eq.js{else}lib/360-view-image.js{/if}" type="module"></script>
 	</script> 
 	<script>
 
