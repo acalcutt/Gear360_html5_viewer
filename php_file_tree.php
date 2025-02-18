@@ -1,23 +1,18 @@
 <?php
 /*
-	
+
 	== PHP FILE TREE ==
-	
 		Let's call it...oh, say...version 1?
-	
 	== AUTHOR ==
-	
 		Cory S.N. LaViska
 		http://abeautifulsite.net/
-		
 	== DOCUMENTATION ==
-	
 		For documentation and updates, visit http://abeautifulsite.net/notebook.php?article=21
-		
 	2019/7/20 - made it so empty directories don't show. - Andrew Calcutt
 	2019/7/24 - made "Home" link show at the top. - Andrew Calcutt
 	2019/7/28 - Added file array output. - Andrew Calcutt
-		
+	2025/02/18 - Added file array output $includedfiles and made folder links no longer clickable. - Andrew Calcutt
+
 */
 
 function php_file_tree(
@@ -25,6 +20,7 @@ function php_file_tree(
 	$return_link,
 	$extensions = [],
 	$excludedfiles = [],
+	$includedfiles = [],
 	$file_list = []
 ) {
 	// Generates a valid XHTML list of all directories, sub-directories, and files in $directory
@@ -37,6 +33,7 @@ function php_file_tree(
 		$return_link,
 		$extensions,
 		$excludedfiles,
+		$includedfiles,
 		true,
 		$file_list
 	);
@@ -50,6 +47,7 @@ function php_file_tree_dir(
 	$return_link,
 	$extensions = [],
 	$excludedfiles = [],
+	$includedfiles = [],
 	$first_call = true,
 	$file_list = []
 ) {
@@ -73,7 +71,24 @@ function php_file_tree_dir(
 	}
 	$file = array_merge($dirs, $files);
 
+	// PRE-FILTERING: Include explicitly included files, regardless of extension
+	if (!empty($includedfiles)) {
+		foreach ($includedfiles as $included_file) {
+			$full_included_path = $directory . "/" . $included_file;
+			if (
+				file_exists($full_included_path) &&
+				!is_dir($full_included_path)
+			) {
+				// Check if the included file is already in the $file array
+				if (!in_array($included_file, $file)) {
+					$file[] = $included_file; // Add the included file if it's not already there
+				}
+			}
+		}
+	}
+
 	// Filter unwanted extensions
+	$filtered = []; // Initialize the $filtered array
 	if (!empty($extensions)) {
 		foreach (array_keys($file) as $key) {
 			if (!is_dir("$directory/$file[$key]")) {
@@ -81,16 +96,15 @@ function php_file_tree_dir(
 					substr($file[$key], strrpos($file[$key], ".") + 1)
 				);
 				if (!in_array($ext, $extensions)) {
-					unset($file[$key]);
+					$filtered[] = $key; // Mark the key for filtering
 				}
 			}
 		}
 	}
 
-	$has_content = false; // Add this line
+	$has_content = false;
 
 	if (count($file) > 2) {
-		// Use 2 instead of 0 to account for . and .. "directories"
 		$id = base64_encode("ul/$directory");
 		$php_file_tree = "<ul id=\"" . $id . "\"";
 		if ($first_call) {
@@ -110,13 +124,14 @@ function php_file_tree_dir(
 						$return_link,
 						$extensions,
 						$excludedfiles,
+						$includedfiles,
 						false,
 						$file_list
 					);
 					$subdir = $arr_ret["data"];
 					$file_list = $arr_ret["file_list"];
 					if ($subdir) {
-						$has_content = true; // Add this line: Content found in subdir
+						$has_content = true;
 
 						// Directory
 						$link = str_replace(
@@ -125,18 +140,29 @@ function php_file_tree_dir(
 							$return_link
 						);
 						$id = base64_encode("li/$directory/" . $this_file);
+						// Removed the <a> tag here
 						$php_file_tree .=
 							"<li id=\"" .
 							$id .
-							"\" class=\"pft-directory\"><a href=\"$link\">" .
-							htmlspecialchars($this_file) .
-							"</a>";
+							"\" class=\"pft-directory\">" .
+							htmlspecialchars($this_file);
 						$php_file_tree .= $subdir;
 						$php_file_tree .= "</li>";
 					}
 				} else {
-					if (!in_array($this_file, $excludedfiles)) {
-						$has_content = true; // Add this line: Content found in a file
+					// Inclusion logic - AFTER Extension Filtering
+					$included = in_array($this_file, $includedfiles);
+					$is_filtered = in_array(
+						array_search($this_file, $file),
+						$filtered
+					); // Check if the file is marked as filtered
+
+					if (
+						(!in_array($this_file, $excludedfiles) &&
+							!$is_filtered) ||
+						$included
+					) {
+						$has_content = true;
 						// File
 						// Get extension (prepend 'ext-' to prevent invalid classes from extensions that begin with numbers)
 						$ext =

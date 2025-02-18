@@ -3,7 +3,7 @@ html, body {
 	width: 100%;
 	font-family: sans-serif;
 	margin: 0;
-	position:fixed;﻿
+	position:fixed;
 	overscroll-behavior: none;
 	touch-action: none;
 }
@@ -12,6 +12,7 @@ td {
 	border: 1px solid black;
 }
 
+/*General Menu Styling*/
 .menu {
 	position: absolute;
 	top: 0;
@@ -20,12 +21,27 @@ td {
 	width: 350px;
 	overflow: auto;
 	background-color: #fff8ea;
+	z-index: 999; /*Make sure menu shows*/
+    display: block; /* Show menu on desktop */
 }
 
 .menu.active {
 	left: -350px;
 }
 
+/* General styling for close button, hidden by default*/
+.mobile-menu-close {
+    display: none;  /* Hidden by default */
+    width: 100%;
+    padding: 10px;
+    background-color: #ddd;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+}
+
+/*Content Style*/
 .content {
 	position: absolute;
 	top: 0;
@@ -33,9 +49,11 @@ td {
 	left: 350px;
 	right: 0;
 	overflow: hidden;
-	background-color: #e7ffe2
+	background-color: #e7ffe2;
+	transition: left 0.3s ease; /* Add transition for smooth animation */
 }
 
+/*Content style menu is active*/
 .content.active {
 	left: 0;
 }
@@ -116,7 +134,7 @@ td {
 	width: 50px;
 }
 
-.inline  {
+.inline {
 	display: inline;
 }
 
@@ -142,7 +160,7 @@ td {
 }
 
 .nowrap {
-   white-space: nowrap;
+  white-space: nowrap;
 }
 
 .canvas-menu-icon {
@@ -162,8 +180,8 @@ td {
 	border: 2px solid #4CAF50; /* Green */
 }
 
-.video-icon:hover  {
-	  background-color: #5CAF50;
+.video-icon:hover {
+	 background-color: #5CAF50;
 }
 
 .video-button {
@@ -173,7 +191,7 @@ td {
 
 .hide-button {
 	width: 30px;
-	height 30px;
+	height: 30px;
 }
 
 #controls {
@@ -204,8 +222,8 @@ td {
 }
 
 .canvas_center {
-    position:absolute;
-    margin-left:-50px;
+  position:absolute;
+  margin-left:-50px;
 	margin: 45vh auto 0;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -216,7 +234,7 @@ td {
 	display: block;
 	cursor: pointer;
 	text-align: center;
-    background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.4);
 	color: #fff;
 	text-shadow:
 		-2px -2px 0 #000,
@@ -283,12 +301,26 @@ ul {
 
 .php-file-tree .pft-directory {
 	list-style-image: url(images/directory.png);
+ color: #000000;
+}
+
+.php-file-tree LI.pft-directory:hover {
+ color: #666666; /* Change the text color on hover */
+ cursor: pointer; /* Change the cursor to a pointer */
 }
 
 /* Menu File Types */
-.php-file-tree LI.pft-home { list-style-image: url(images/home-16.png); }
-.php-file-tree LI.pft-file { list-style-image: url(images/file.png); }
-.php-file-tree LI.ext-mpd { list-style-image: url(images/film.png); }
+.php-file-tree LI.pft-home {
+ list-style-image: url(images/home-16.png);
+}
+
+.php-file-tree LI.pft-file {
+ list-style-image: url(images/file.png);
+}
+
+.php-file-tree LI.ext-mpd {
+ list-style-image: url(images/film.png);
+}
 
 .bt-menu-trigger {
 	float:left;
@@ -355,75 +387,128 @@ ul {
 }
 
 .menu_default_hidden{
-   display: none;
+ display: none;
 }
 
 .menu_default_visible{
-   display: inline-block;
+ display: inline-block;
+}
+
+/* Mobile Menu Toggle Button (Hamburger Icon) */
+.mobile-menu-toggle {
+ position: fixed;
+ top: 10px;
+ left: 10px;
+ background: none;
+ border: none;
+ cursor: pointer;
+ padding: 10px;
+ z-index: 1001; /* Ensure on top of the menu */
+ display: none; /* Hidden by default on larger screens */
+}
+
+.mobile-menu-toggle span {
+ display: block;
+ width: 25px;
+ height: 3px;
+ background-color: #000; /* Hamburger icon color */
+ margin: 5px 0;
+ transition: all 0.3s ease-in-out;
 }
 
 /* ---------------------------------------------------
 MEDIAQUERIES
 ----------------------------------------------------- */
-@media (max-width: 768px), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and ( -o-min-device-pixel-ratio: 2/1), only screen and ( min-device-pixel-ratio: 2), only screen and ( min-resolution: 192dpi), only screen and ( min-resolution: 2dppx) {
-	.menu_default_hidden{
-	   display: inline-block;
-	}
+@media (max-width: 768px) {
 
-	.menu_default_visible{
-	   display: none;
-	}
+ /* Mobile Styles - Menu Hidden by Default */
+ .mobile-menu-container #menu {
+  display: none; /* Hide the menu on mobile by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100%;
+  background-color: #fff8ea; /* Keep same background color */
+  overflow-y: auto;
+  z-index: 1000; /* Ensure on top */
+ }
 
-	.vidcontrols {
-		left: 0;
-	}
+ .menu {
+  position: fixed; /* Change to fixed */
+  top: 0;
+  left: -300px; /* Hide off-screen by default */
+  width: 300px; /* Match mobile menu width */
+  height: 100%;
+  background-color: #fff8ea;
+  overflow-y: auto;
+  z-index: 1000;
+  transition: left 0.3s ease; /* Smooth transition */
 
-	.vidcontrols.active {
-		left: 300px;
-	}
-	
-	.canv_thumb {
-		width:160px;
-		height:90px;
-	}
+  /* Reset styles */
+  display: none;
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+ }
 
-	.menu {
-		left: -350px;
-		width: 300px;
-	}
+ .menu.active {
+  left: 0; /* Slide in when active */
+ }
 
-	.menu.active {
-		left: 0;
-		width: 300px;
-	}
 
-	.content {
-		left: 0;
-	}
+ .content {
+  left: 0; /* Start at 0 on mobile */
+  transition: left 0.3s ease; /* Transition animation */
+  position: relative;
+  top: 60px; /*Increase to provide text more spacing*/
+  height: calc(100% - 60px); /*Ensure content takes up all space minus 60px*/
+ }
 
-	.content.active {
-		left: 300px;
-	}   
+ .content.active {
+  left: 300px; /* Push content to the right when menu is active */
+ }
 
-	.bt-menu-trigger span:before {
-		-webkit-transform: translateY(-0.5em);
-		transform: translateY(-0.5em);
-	}
+ .mobile-menu-toggle {
+  display: block;
+  padding: 15px; /*Increase padding */
+ }
 
-	.bt-menu-trigger span:after {
-		-webkit-transform: translateY(0.5em);
-		transform: translateY(0.5em);
-	}
+ /* Hides the burger menu when the menu is open */
+ .mobile-menu-container.menu-open .mobile-menu-toggle {
+  display: none;
+ }
 
-	.bt-menu-trigger.bt-menu-alt span:before {
-		-webkit-transform: translateY(-0.36em) translateX(-0.65em) rotate(-45deg) scaleX(0.6);
-		transform: translateY(-0.35em) translateX(-0.65em) rotate(-45deg) scaleX(0.6);
-	}
+ .mobile-menu-container {
+  position: relative;
+ }
 
-	.bt-menu-trigger.bt-menu-alt span:after {
-		-webkit-transform: translateY(0.36em) translateX(-0.65em) rotate(45deg) scaleX(0.6);
-		transform: translateY(0.35em) translateX(-0.65em) rotate(45deg) scaleX(0.6);
-	}
+ /* Show the menu on the smaller screens */
+ .mobile-menu-container.menu-open #menu {
+  display: block;
+ }
+
+ /* The overlay when the menu is active, the user can click this overlay to close the menu */
+ .mobile-menu-container.menu-open .menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 999; /* Below the menu but above other content */
+ }
+
+ /*Show the close menu button*/
+ .mobile-menu-close {
+  display: block; /* Show the menu on mobile screens */
+ }
+
+  /* Hide showhidemenubtn1 on smaller screens */
+  #showhidemenubtn1 {
+   display: none; /* Hide the button on mobile */
+  }
 }
 
 @media (max-height: 650px) {
@@ -446,4 +531,42 @@ MEDIAQUERIES
 	.canvas_center {
 		margin: 30vh auto 0;
 	}
+}
+
+
+.php-file-tree LI.pft-directory {
+ list-style-image: url(images/directory.png);
+ color: #000000;
+}
+
+.php-file-tree LI.pft-directory:hover {
+ color: #666666; /* Change the text color on hover */
+ cursor: pointer; /* Change the cursor to a pointer */
+}
+
+/* Menu File Types */
+.php-file-tree LI.pft-home {
+ list-style-image: url(images/home-16.png);
+}
+
+.php-file-tree LI.pft-file {
+ list-style-image: url(images/file.png);
+}
+
+.php-file-tree LI.ext-mpd {
+ list-style-image: url(images/film.png);
+}
+
+.php-file-tree LI.ext-m3u8 {
+ list-style-image: url(images/film.png);
+}
+
+/* Existing styles for showhidemenubtn1 */
+
+
+/* Hide showhidemenubtn1 on smaller screens */
+@media (max-width: 768px) {
+ #showhidemenubtn1 {
+  display: none; /* Hide the button on mobile */
+ }
 }

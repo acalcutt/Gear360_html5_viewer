@@ -2,7 +2,7 @@
 {include file="menu.tpl"}
 <div class="col content" id="content">
 	<div id="container" ondragstart="return false;" ondrop="return false;">
-		<video autoplay playsinline id="video" class="video_default"><source src="{$video_fallback}" type="video/mp4"></video>
+		<video autoplay playsinline id="video" class="video_default"></video>
 		<canvas id="360canvas" class="canvas_default"></canvas>
 		<div id="canvas_message" class="canvas_center"></div>
 		<menu id="controls">
@@ -36,9 +36,7 @@
 		var video = document.getElementById('video');
 		var initialVideoBitrate = {$initialVideoBitrate|default:0}; // Get initial bitrate from Smarty, default to 0 if not set
 		var hls = null;
-		if (video.canPlayType('application/vnd.apple.mpegurl')) {
-			video.src = '{$file}';
-		} else if (Hls.isSupported()) {
+		if (Hls.isSupported()) {
 			hls = new Hls();
 			hls.loadSource('{$file}');  {* Load the HLS manifest *}
 			hls.attachMedia(video);
@@ -65,20 +63,22 @@
 				console.log('bestLevel:' + bestLevel);
 			  }
 
+				video.muted = true;
 				video.play();
 			});
 
 			hls.on(Hls.Events.ERROR, function(event, data) {
 				console.warn("HLS.js error:", data);
-				// Try fallback if HLS.js fails
-				video.src = '{$video_fallback}';
-				video.type = 'video/mp4';  // Specify the correct MIME type
-				video.play();
 			});
+		} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+			video.src = '{$file}';
+			video.muted = true;
+			video.play();
 		} else {
 			// Use the MP4 fallback source if HLS is not supported at all
 			video.src = '{$video_fallback}';
 			video.type = 'video/mp4';  // Specify the correct MIME type
+			video.muted = true;
 			video.play();
 		}
 
