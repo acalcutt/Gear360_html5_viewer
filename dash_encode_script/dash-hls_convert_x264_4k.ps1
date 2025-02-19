@@ -1,20 +1,17 @@
 ﻿# Configuration
-$input = "\\192.168.0.12\e\360 Videos\Origional Files\plant\timelapse.mp4" # Replace with your input file
+$input = "\\192.168.0.12\e\360 Videos\Origional Files\ATV\2019-06-15 - Byron ME\360_0061.MP4" # Replace with your input file
+$output_folder = "" # Defined later
 $starttime = "0"
 $endtime = "0"
+$BinPath = $PSScriptRoot + '\bin'
+$ffmpeg_path = $BinPath + "\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe" # Needed for both encoding and checking
+$ffprobe_path = $BinPath + "\ffmpeg-master-latest-win64-gpl-shared\bin\ffprobe.exe"
+$packager_path = $BinPath + "\shaka-packager\packager-win-x64.exe"
 $x264_DASH_PARAMS = " -r 24 -x264opts keyint=24:min-keyint=24:no-scenecut " # Use if encoding to intermediate MP4s
-#$hwaccel_PARAMS = "-hwaccel dxva2 -threads 4 " # Possibly needed for intermediate encoding
-$ffmpeg_path = "C:\scripts\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe" # Needed for both encoding and checking
-$ffprobe_path = "C:\scripts\ffmpeg-master-latest-win64-gpl-shared\bin\ffprobe.exe"
-#$mp4box_path = "MP4Box.exe" # No longer needed
 $audio_bitrate = "128k"
 $video_base_bitrate = "750k"
-$isEquirectangular = $true # Set to $true if the input is equirectangular, $false otherwise
-$base_url = "https://example.org/" # Define your base URL
-$output_folder = "" # Defined later
-$outfile_basename = "" # Defined later
-$packager_path = "C:\scripts\packager-win-x64.exe" # Update with the actual path if needed, e.g., "C:\Program Files\Shaka Packager\packager.exe"
 $has_audio = $false
+
 
 # Function to get video resolution using ffprobe
 function Get-VideoResolution {
@@ -54,6 +51,12 @@ function Encode-Video {
         [string]$resolution,
         [string]$bitrate
     )
+
+    #Check if the outputfile already exists. if so, dont run
+    if (Test-Path $outputFile) {
+      Write-Host "Output file '$outputFile' already exists. Skipping encoding."
+      return # Exit the function
+    }
 
     $params = ""
     if ($starttime -and $starttime -ne "0") {
@@ -190,43 +193,61 @@ If (Test-Path $input) {
 
         # --- Encode Video Streams (to intermediate MP4s) ---
         $encoded_files = @{} # Hash table to store paths to encoded files
+
         foreach ($res in $resolutions) {
             $safe_resolution = $res.Res -replace "x", "_" # Create a safe name for the resolution
             $outfile = Join-Path $output_folder "$($basename)_$($safe_resolution)_$($res.Bitrate).mp4" # Changed to use Join-Path
-            Encode-Video -inputFile $input -outputFile $outfile -resolution $($res.Res) -bitrate $($res.Bitrate)
-            $key = $res.Res + '_' + $res.Bitrate
-            $encoded_files[$key] = $outfile # Store the path for packager input
+
+            #Checks if the $outfile alread exists.
+            if (Test-Path $outfile) {
+                Write-Host "Output file '$outfile' already exists. Skipping encoding."
+                $encoded_files[$res.Res + '_' + $res.Bitrate] = $outfile # Store the path for packager input
+            }
+            else{
+                Encode-Video -inputFile $input -outputFile $outfile -resolution $($res.Res) -bitrate $($res.Bitrate)
+                $encoded_files[$res.Res + '_' + $res.Bitrate] = $outfile # Store the path for packager input
+            }
+
         }
 
-        echo $encoded_files
-
         # --- Encode Audio ---
+        $packager_audio_input = $null # Initialize to null
+
         if ($has_audio) {
-            $outfile_audio = Join-Path $output_folder "audio.mp4" # Changed to use Join-Path
-            $params_audio = ""
-            if ($starttime -and $starttime -ne "0") {
-                $params_audio += "-ss $($starttime) "
-            }
-            $params_audio += "-i `"$input`" "
-            if ($endtime -and $endtime -ne "0") {
-                $params_audio += "-t $($endtime) "
+
+            $outfile_audio = Join-Path $output_folder "audio.mp4"
+
+            if (Test-Path $outfile_audio) {
+                Write-Host "Output file '$outfile_audio' already exists. Skipping audio encoding."
             }
 
-            $params_audio += "-vn -acodec aac -ab $($audio_bitrate) `"$outfile_audio`""
-            Write-Host "Creating $outfile_audio | $ffmpeg_path $params_audio"
-            try {
-                $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params_audio" -PassThru # -verbose
-                if ($output.ExitCode -ne 0) {
-                    Write-Error "FFmpeg failed with exit code $($output.ExitCode)"
+            else{
+                $params_audio = ""
+                if ($starttime -and $starttime -ne "0") {
+                    $params_audio += "-ss $($starttime) "
                 }
-            } catch {
-                Write-Error "Error running FFmpeg: $($_.Exception.Message)"
+                $params_audio += "-i `"$input`" " # Use originalFullName
+                if ($endtime -and $endtime -ne "0") {
+                    $params_audio += "-t $($endtime) "
+                }
+
+                $params_audio += "-vn -acodec aac -ab $($audio_bitrate) `"$outfile_audio`""
+                Write-Host "Creating $outfile_audio | $ffmpeg_path $params_audio"
+                try {
+                    $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params_audio" -PassThru # -verbose
+                    if ($output.ExitCode -ne 0) {
+                        Write-Error "FFmpeg failed with exit code $($output.ExitCode)"
+                    }
+                } catch {
+                    Write-Error "Error running FFmpeg: $($_.Exception.Message)"
+                }
+
             }
 
             $safe_audio_bitrate = $audio_bitrate -replace "k", ""
             $audio_output_segment = "audio_$($safe_audio_bitrate).mp4" # Changed to use Join-Path
             $audio_playlist_name = "audio.m3u8"
-            $packager_audio_input = "in=`"$outfile_audio`",stream=audio,output=`"$audio_output_segment`",playlist_name=`"$audio_playlist_name`",hls_group_id=audio,hls_name=ENGLISH"
+            $packager_audio_input = "in=`"$outfile_audio`",stream=audio,output=`"$audio_output_segment`",playlist_name=`"$audio_playlist_name`",hls_group_id=audio,hls_name=ENGLISH" # Set packager audio input
         }
 
 
@@ -240,85 +261,113 @@ If (Test-Path $input) {
         }
 
         # Add audio input stream if it has audio
-        if ($has_audio) {
+        if ($has_audio -and $packager_audio_input) { # Only add if not null
             $packager_commands += $packager_audio_input
         }
 
-        echo $packager_commands
 
-        # Common Packager Arguments
-        $hls_master_playlist_output = Join-Path $encoded_folder "Play.m3u8" # Added to put the output file in output directory.
-        $mpd_output = Join-Path $encoded_folder "Play.mpd" # Added to put the output file in output directory.
+        # Check if the master playlist file already exists. if so, dont run.
+        $hls_master_playlist_output = Join-Path $encoded_folder "Play.m3u8"
+        $mpd_output = Join-Path $encoded_folder "Play.mpd"
 
-        $common_packager_args = @(
-            "--hls_master_playlist_output", """$hls_master_playlist_output""",
-            "--mpd_output", """$mpd_output"""
-        )
-
-
-        # Combine packager commands and common arguments into a single array
-        $packager_arguments = @($packager_commands) + @($common_packager_args)
-
-
-        Write-Host "Packager command: $packager_path $($packager_arguments)"
-        try {
-            $output = Start-Process -Wait -FilePath $packager_path -ArgumentList $packager_arguments -WorkingDirectory $encoded_folder -PassThru
-            if ($output.ExitCode -ne 0) {
-                Write-Error "Packager failed with exit code $($output.ExitCode)"
-            }
-        } catch {
-            Write-Error "Error running Packager: $($_.Exception.Message)"
+        if (Test-Path $hls_master_playlist_output) {
+            Write-Host "Output file '$hls_master_playlist_output' already exists. Skipping packager."
         }
+
+        else{
+            echo $packager_commands
+
+            # Common Packager Arguments
+            $common_packager_args = @(
+                "--hls_master_playlist_output", """$hls_master_playlist_output""",
+                "--mpd_output", """$mpd_output"""
+            )
+
+
+            # Combine packager commands and common arguments into a single array
+            $packager_arguments = @($packager_commands) + @($common_packager_args)
+
+
+            Write-Host "Packager command: $packager_path $($packager_arguments)"
+            try {
+                $output = Start-Process -Wait -FilePath $packager_path -ArgumentList $packager_arguments -WorkingDirectory $encoded_folder -PassThru
+                if ($output.ExitCode -ne 0) {
+                    Write-Error "Packager failed with exit code $($output.ExitCode)"
+                }
+            } catch {
+                Write-Error "Error running Packager: $($_.Exception.Message)"
+            }
+        } # end of Test-Path $hls_master_playlist_output
+
 
         # --- Create Thumbnail and Fallback MP4 (if needed) ---
         # Thumbnail creation remains the same. Fallback MP4 creation is optional.
+
         $thumbnail_name = Join-Path $encoded_folder "thumbnail.jpg" # added correct dir
-        $thumbnail_width = 320
-        $thumbnail_height = 180
-
-        $params8 = ""
-        if ($starttime -and $starttime -ne "0") {
-            $params8 += "-ss $($starttime) "
+        #Check if the $thumbnail_name file already exists. if so, dont run.
+        if (Test-Path $thumbnail_name) {
+            Write-Host "Output file '$thumbnail_name' already exists. Skipping thumbnail creation."
         }
 
-        $params8 += "-i `"$input.FullName`" -vf scale=$($thumbnail_width):$($thumbnail_height) -qscale:v 6 -vframes 1 `"$thumbnail_name`""
-        try {
-            $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params8" -PassThru # -verbose
-            if ($output.ExitCode -ne 0) {
-                Write-Error "FFmpeg failed with exit code $($output.ExitCode)"
+        else{
+            $thumbnail_width = 320
+            $thumbnail_height = 180
+
+            $params8 = ""
+            if ($starttime -and $starttime -ne "0") {
+                $params8 += "-ss $($starttime) "
             }
-        } catch {
-            Write-Error "Error running FFmpeg: $($_.Exception.Message)"
-        }
+
+            $params8 += "-i `"$input`" -vf scale=$($thumbnail_width):$($thumbnail_height) -qscale:v 6 -vframes 1 `"$thumbnail_name`""
+            try {
+                $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params8" -PassThru # -verbose
+                if ($output.ExitCode -ne 0) {
+                    Write-Error "FFmpeg failed with exit code $($output.ExitCode)"
+                }
+            } catch {
+                Write-Error "Error running FFmpeg: $($_.Exception.Message)"
+            }
+        } # end of Test-Path $thumbnail_name
+
+
 
         $outfile0 = Join-Path $encoded_folder "fallback.mp4" # added correct dir
-        $fallbackWidth = [math]::Min(1280, $maxOutputWidth)
-        $fallbackHeight = [math]::Min(720, $maxOutputHeight)
-        $params0 = ""
-        if ($starttime -and $starttime -ne "0") {
-            $params0 += "-ss $($starttime) "
+        #Check if the fallback.mp4 file already exists. if so, dont run.
+        if (Test-Path $outfile0) {
+            Write-Host "Output file '$outfile0' already exists. Skipping fallback creation."
         }
-        $params0 += "-i `"$input`" "
-        if ($endtime -and $endtime -ne "0") {
-            $params0 += "-t $($endtime) "
-        }
-
-        if ($has_audio) {
-            $params0 += "-c:v libx264 -s $($fallbackWidth)x$($fallbackHeight) -b:v 2000k -c:a aac -b:a $($audio_bitrate) -f mp4 `"$outfile0`""
-        } else {
-            $params0 += "-c:v libx264 -s $($fallbackWidth)x$($fallbackHeight) -b:v 2000k -an -f mp4 `"$outfile0`""
-        }
-        try {
-            $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params0" -PassThru # -verbose
-            if ($output.ExitCode -ne 0) {
-                Write-Error "FFmpeg failed with exit code $($output.ExitCode)"
+        else{
+            $fallbackWidth = [math]::Min(1280, $maxOutputWidth)
+            $fallbackHeight = [math]::Min(720, $maxOutputHeight)
+            $params0 = ""
+            if ($starttime -and $starttime -ne "0") {
+                $params0 += "-ss $($starttime) "
             }
-        } catch {
-            Write-Error "Error running FFmpeg: $($_.Exception.Message)"
-        }
+            $params0 += "-i `"$input`" " #Use originalFullName
+            if ($endtime -and $endtime -ne "0") {
+                $params0 += "-t $($endtime) "
+            }
+
+            if ($has_audio) {
+                $params0 += "-c:v libx264 -s $($fallbackWidth)x$($fallbackHeight) -b:v 2000k -c:a aac -b:a $($audio_bitrate) -f mp4 `"$outfile0`""
+            } else {
+                $params0 += "-c:v libx264 -s $($fallbackWidth)x$($fallbackHeight) -b:v 2000k -an -f mp4 `"$outfile0`""
+            }
+            try {
+                $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params0" -PassThru # -verbose
+                if ($output.ExitCode -ne 0) {
+                    Write-Error "FFmpeg failed with exit code $($output.ExitCode)"
+                }
+            } catch {
+                Write-Error "Error running FFmpeg: $($_.Exception.Message)"
+            }
+        } # end of Test-Path $outfile0
+
 
     } else {
         Write-Error "Failed to get source resolution. Aborting."
     }
 }
 Else { "File $input does not exist" }
+
+Write-Host "Processing complete."

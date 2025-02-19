@@ -1,19 +1,15 @@
 ﻿# Configuration
 $source_folder = "\\192.168.0.12\e\360 Videos\Origional Files\ATV\2021" # Replace with your input folder
+$output_folder = "" # Defined later
 $starttime = "0"
 $endtime = "0"
+$BinPath = $PSScriptRoot + '\bin'
+$ffmpeg_path = $BinPath + "\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe" # Needed for both encoding and checking
+$ffprobe_path = $BinPath + "\ffmpeg-master-latest-win64-gpl-shared\bin\ffprobe.exe"
+$packager_path = $BinPath + "\shaka-packager\packager-win-x64.exe"
 $x264_DASH_PARAMS = " -r 24 -x264opts keyint=24:min-keyint=24:no-scenecut " # Use if encoding to intermediate MP4s
-#$hwaccel_PARAMS = "-hwaccel dxva2 -threads 4 " # Possibly needed for intermediate encoding
-$ffmpeg_path = "C:\scripts\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe" # Needed for both encoding and checking
-$ffprobe_path = "C:\scripts\ffmpeg-master-latest-win64-gpl-shared\bin\ffprobe.exe"
-#$mp4box_path = "MP4Box.exe" # No longer needed
 $audio_bitrate = "128k"
 $video_base_bitrate = "750k"
-$isEquirectangular = $true # Set to $true if the input is equirectangular, $false otherwise
-$base_url = "https://example.org/" # Define your base URL
-$output_folder = "" # Defined later
-$outfile_basename = "" # Defined later
-$packager_path = "C:\scripts\packager-win-x64.exe" # Update with the actual path if needed, e.g., "C:\Program Files\Shaka Packager\packager.exe"
 $has_audio = $false
 
 # Function to get video resolution using ffprobe
