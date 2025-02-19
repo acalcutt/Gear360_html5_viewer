@@ -3,37 +3,37 @@
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT10S">
   <Period id="0">
     <AdaptationSet id="0" contentType="video" maxWidth="1920" maxHeight="1080" frameRate="12288/512" subsegmentAlignment="true" par="16:9">
-      <Representation id="0" bandwidth="446006" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360">
+      <Representation id="0" bandwidth="432676" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360">
         <BaseURL>640_360_375k.mp4</BaseURL>
         <SegmentBase indexRange="876-931" timescale="12288">
           <Initialization range="0-875"/>
         </SegmentBase>
       </Representation>
-      <Representation id="1" bandwidth="811852" codecs="avc1.64001f" mimeType="video/mp4" sar="1:1" width="896" height="504">
+      <Representation id="1" bandwidth="812156" codecs="avc1.64001f" mimeType="video/mp4" sar="1:1" width="896" height="504">
         <BaseURL>896_504_700k.mp4</BaseURL>
         <SegmentBase indexRange="876-931" timescale="12288">
           <Initialization range="0-875"/>
         </SegmentBase>
       </Representation>
-      <Representation id="2" bandwidth="2777114" codecs="avc1.64001f" mimeType="video/mp4" sar="1:1" width="1280" height="720">
+      <Representation id="2" bandwidth="2804588" codecs="avc1.64001f" mimeType="video/mp4" sar="1:1" width="1280" height="720">
         <BaseURL>1280_720_2500k.mp4</BaseURL>
         <SegmentBase indexRange="876-931" timescale="12288">
           <Initialization range="0-875"/>
         </SegmentBase>
       </Representation>
-      <Representation id="3" bandwidth="5667419" codecs="avc1.64001f" mimeType="video/mp4" sar="1:1" width="1280" height="720">
+      <Representation id="3" bandwidth="5543596" codecs="avc1.64001f" mimeType="video/mp4" sar="1:1" width="1280" height="720">
         <BaseURL>1280_720_5000k.mp4</BaseURL>
         <SegmentBase indexRange="876-931" timescale="12288">
           <Initialization range="0-875"/>
         </SegmentBase>
       </Representation>
-      <Representation id="4" bandwidth="8672067" codecs="avc1.640028" mimeType="video/mp4" sar="1:1" width="1920" height="1080">
+      <Representation id="4" bandwidth="8347980" codecs="avc1.640028" mimeType="video/mp4" sar="1:1" width="1920" height="1080">
         <BaseURL>1920_1080_7500k.mp4</BaseURL>
         <SegmentBase indexRange="877-932" timescale="12288">
           <Initialization range="0-876"/>
         </SegmentBase>
       </Representation>
-      <Representation id="5" bandwidth="11588692" codecs="avc1.640028" mimeType="video/mp4" sar="1:1" width="1920" height="1080">
+      <Representation id="5" bandwidth="11046856" codecs="avc1.640028" mimeType="video/mp4" sar="1:1" width="1920" height="1080">
         <BaseURL>1920_1080_10000k.mp4</BaseURL>
         <SegmentBase indexRange="877-932" timescale="12288">
           <Initialization range="0-876"/>
@@ -41,7 +41,7 @@
       </Representation>
     </AdaptationSet>
     <AdaptationSet id="1" contentType="audio" lang="en" subsegmentStartsWithSAP="1" subsegmentAlignment="true">
-      <Representation id="6" bandwidth="131575" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="48000">
+      <Representation id="6" bandwidth="131756" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>audio_128.mp4</BaseURL>
         <SegmentBase indexRange="833-888" timescale="48000">
