@@ -37,20 +37,25 @@
 	<script>
 		var urlParams = new URLSearchParams(window.location.search);
 		var url = urlParams.get('file')
-		var initialConfig = {
-			'streaming': {
-				'abr': {
+		const video_elem = document.querySelector('video');
+		video_elem.muted = true;
+	
+		const player = dashjs.MediaPlayer().create();
+
+		var targetAudioBitrate = {if $initialAudioBitrate eq -1}-1{else}{$initialAudioBitrate} / 1000{/if};
+		var targetVideoBitrate = {if $initialVideoBitrate eq -1}-1{else}{$initialVideoBitrate} / 1000{/if};
+		console.log('targetAudioBitrate: ' + targetAudioBitrate + ' targetVideoBitrate: ' + targetVideoBitrate);
+		player.updateSettings({
+			streaming: {
+				abr: {
 					limitBitrateByPortal: false,
-					initialBitrate: { audio: {$initialAudioBitrate}, video: {$initialVideoBitrate} },
+					initialBitrate: { audio: targetAudioBitrate, video: targetVideoBitrate },
 					autoSwitchBitrate: { audio: true, video: true }
 				}
 			}
-		}
+		});
 
-		const video_elem = document.querySelector('video');
-		const player = dashjs.MediaPlayer().create();
 		player.initialize(video_elem, url, true);
-		video_elem.muted = true;
 		player.setAutoPlay(true);
 		
 		player.on("streamInitialized", function () {
