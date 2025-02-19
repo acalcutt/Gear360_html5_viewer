@@ -467,7 +467,7 @@ ul {
 /* ---------------------------------------------------
 MEDIAQUERIES
 ----------------------------------------------------- */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
 
  /* Mobile Styles - Menu Hidden by Default */
  .mobile-menu-container #menu {
@@ -475,7 +475,7 @@ MEDIAQUERIES
   position: fixed;
   top: 0;
   left: 0;
-  width: 300px;
+  width: 350px;
   height: 100%;
   background-color: #fff8ea; /* Keep same background color */
   overflow-y: auto;
@@ -552,6 +552,11 @@ MEDIAQUERIES
   /* Hide showhidemenubtn1 on smaller screens */
   #showhidemenubtn1 {
    display: none; /* Hide the button on mobile */
+  }
+
+  .canv_thumb {
+    width:160px;
+    height:90px;
   }
 }
 
