@@ -2,6 +2,11 @@
 {include file="menu.tpl"}
 
 <div id="content" class="content scroll">
+    <br/>
+    <div class="center">
+        <h2>← Pick a video from the menu. Click and drag inside the video to look around.</h2>
+    </div>
+    <br/>
     <table id="projectinfo" id="details">
         <tr>
             <td class="pidesc">Project Description</td>
@@ -35,9 +40,5 @@
                         Forum</a></b></td>
         </tr>
     </table>
-    <br/>
-    <div class="center">
-        <h2>← Pick a video from the menu. Click and drag inside the video to look around.</h2>
-    </div>
 </div>
 {include file="footer.tpl"}

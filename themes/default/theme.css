@@ -6,6 +6,7 @@ html, body {
 	position:fixed;
 	overscroll-behavior: none;
 	touch-action: none;
+	background-color: #e7ffe2;
 }
 
 td {
@@ -51,6 +52,32 @@ td {
 	overflow: hidden;
 	background-color: #e7ffe2;
 	transition: left 0.3s ease; /* Add transition for smooth animation */
+}
+
+.content.menu-hidden {
+    left: 0; /* Expand to the left */
+    right: 0; /* Expand to the right */
+}
+
+.menu-hidden #container {
+	width: 100%;
+}
+
+.menu-hidden #image {
+	width: 100%;
+}
+
+.menu-hidden #_360canvas {
+	width: 100%;
+}
+
+/*Styling of menu*/
+.menu_default_hidden{
+    display: none;
+}
+
+.menu_default_visible{
+    display: inline-block;
 }
 
 /*Content style menu is active*/
@@ -416,6 +443,27 @@ ul {
  transition: all 0.3s ease-in-out;
 }
 
+#soundVolumeContainer {
+  position: relative;
+  display: inline-block; /* Allows hover to work on the container */
+}
+
+#soundVolumeContainer #volume {
+  position: absolute;
+  bottom: 100%; /* Position above the button */
+  left: 50%;
+  transform: translateX(-50%); /* Center the slider */
+  width: 100px; /* Adjust width as needed */
+  opacity: 0; /* Initially hidden */
+  visibility: hidden; /* Required for opacity transition to work correctly in some browsers */
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+}
+
+#soundVolumeContainer:hover #volume {
+  opacity: 1; /* Show on hover */
+  visibility: visible;
+}
+
 /* ---------------------------------------------------
 MEDIAQUERIES
 ----------------------------------------------------- */
@@ -464,10 +512,6 @@ MEDIAQUERIES
   position: relative;
   top: 60px; /*Increase to provide text more spacing*/
   height: calc(100% - 60px); /*Ensure content takes up all space minus 60px*/
- }
-
- .content.active {
-  left: 300px; /* Push content to the right when menu is active */
  }
 
  .mobile-menu-toggle {

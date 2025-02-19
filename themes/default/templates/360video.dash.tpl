@@ -18,6 +18,8 @@
 				<span id="iconNextFile" class="video-icon" title="Next File"><img class="video-button" src="{$theme_dir}images/node-down-60.png"></span>
 				<span id="iconCamView" class="video-icon" title="Source View"><img class="video-button" id="videobtn" src="{$theme_dir}images/video-camera-60.png"></span>
 				<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
+				<span id="iconSoundMute" class="video-icon" title="Full Screen"><img class="video-button" id="soundmutebtn" src="{$theme_dir}images/mute-60.png" title="Mute/Unmute"></span>
+				<span class="inline nowrap player-btn video-icon">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
 				<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
 				<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.1" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1.0x</label></span>
 				<span class="view_controls">
@@ -26,7 +28,6 @@
 					<span class="inline nowrap player-btn video-icon">Left/Right: <input class="canv_slider" id="default_y_view" type="range" max="360" min="0" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°</label></span>
 					<span class="inline nowrap player-btn video-icon">Rotate: <input class="canv_slider" id="default_x_view" type="range" max="360" min="0" step="1" value="{$default_x}"><label id="default_x_view_label">{$default_x}°</label></span>
 				</span>
-				<span class="inline nowrap player-btn video-icon">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
 				<span class="video-icon"><select id="bitrate_list" name="bitrate_list"><option selected="selected" value="auto">Auto Bitrate</option></select></span>
 			</span>
 		</menu>
@@ -45,10 +46,11 @@
 				}
 			}
 		}
-		
-		var player = dashjs.MediaPlayer().create();
-		player.updateSettings(initialConfig);
-		player.initialize(document.querySelector("#video"), url, true);
+
+		const video_elem = document.querySelector('video');
+		const player = dashjs.MediaPlayer().create();
+		player.initialize(video_elem, url, true);
+		video_elem.muted = true;
 		player.setAutoPlay(true);
 		
 		player.on("streamInitialized", function () {
@@ -88,6 +90,7 @@
 		});
 
 		const container = document.getElementById("container");
+		const contentElement = document.getElementById('content');
 		const video  = document.getElementById('video');
 		const canvas_message = document.getElementById('canvas_message');
 		const progressBar = document.getElementById('progress-bar');
@@ -99,7 +102,8 @@
 		const file_backward = document.getElementById('iconPreviousFile');
 		const full_screen = document.getElementById('iconFullscreen');
 		const cam_view = document.getElementById('iconCamView');
-		const volume = document.getElementById('volume');
+		const iconSoundMute = document.getElementById('iconSoundMute');
+		const soundmutebtn = document.getElementById('soundmutebtn');
 		const playbackRate = document.getElementById('playbackRate');
 		const bitrate_list = document.getElementById('bitrate_list');
 		const CurrentFile = '{$file}';
@@ -203,7 +207,17 @@
 			}
 		}
 
-	   
+
+		function toggleSoundMute() {
+			video.muted = !video.muted; // Toggle the muted state
+
+			if (video.muted) {
+				soundmutebtn.src = "{$theme_dir}images/mute-60.png"; // Show mute icon
+			} else {
+				soundmutebtn.src = "{$theme_dir}images/sound-60.png"; // Show unmute icon
+			}
+		}
+
 		function selectBitrate() {
 			var sel_bitrate = bitrate_list.options[bitrate_list.selectedIndex].value;
 			if(sel_bitrate == "auto")
@@ -309,12 +323,19 @@
 		file_backward.addEventListener('click', PlayPrevFile);
 		full_screen.addEventListener('click', goFullScreen);
 		cam_view.addEventListener('click', toggleVideo);
+		iconSoundMute.addEventListener('click', toggleSoundMute);
 		volume.addEventListener('change', rangeUpdate);
 		volume.addEventListener('mousemove', rangeUpdate);
 		playbackRate.addEventListener('change', rangeUpdate);
 		playbackRate.addEventListener('mousemove', rangeUpdate);
 
 		bitrate_list.addEventListener('change', selectBitrate);
+
+		contentElement.addEventListener('transitionend', function(event) {
+			if (event.propertyName === 'left') {
+				onWindowResize();
+			}
+		});
 
 		let mousedown = false;
 	</script>

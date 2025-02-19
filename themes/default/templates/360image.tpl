@@ -28,6 +28,7 @@
 	<script>
 
 		const container = document.getElementById("container");
+		const contentElement = document.getElementById('content');
 		const image  = document.getElementById('image');
 		const hide_controls = document.getElementById('iconShowHide');
 		const file_forward = document.getElementById('iconNextFile');
@@ -93,6 +94,12 @@
 		file_backward.addEventListener('click', PlayPrevFile);
 		full_screen.addEventListener('click', goFullScreen);
 		cam_view.addEventListener('click', toggleImage);
+
+		contentElement.addEventListener('transitionend', function(event) {
+			if (event.propertyName === 'left') {
+				onWindowResize();
+			}
+		});
 
 		let mousedown = false;
 	</script>
