@@ -1,17 +1,19 @@
 ﻿# Configuration
-$input = "\\192.168.0.12\e\360 Videos\Origional Files\ATV\2019-06-15 - Byron ME\360_0061.MP4" # Replace with your input file
-$output_folder = "" # Defined later
+$originalFullName = "\\192.168.0.12\e\360 Videos\Origional Files\ATV\2019-06-15 - Byron ME\360_0061.MP4" # Replace with your input file
+$temp_folder = $source_folder + '\temp'
+$output_folder = $source_folder + '\encoded'
 $starttime = "0"
 $endtime = "0"
 $BinPath = $PSScriptRoot + '\bin'
+$exiftool_path = $BinPath + "\exiftool.exe"
 $ffmpeg_path = $BinPath + "\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe" # Needed for both encoding and checking
 $ffprobe_path = $BinPath + "\ffmpeg-master-latest-win64-gpl-shared\bin\ffprobe.exe"
 $packager_path = $BinPath + "\shaka-packager\packager-win-x64.exe"
-$x264_DASH_PARAMS = " -r 24 -x264opts keyint=24:min-keyint=24:no-scenecut " # Use if encoding to intermediate MP4s
+$encoder = "libx264"
+$videoArgs = "-c:v $encoder -pix_fmt yuv420p -profile:v high -level 4.2 -r 24 -x264opts keyint=24:min-keyint=24:no-scenecut"
 $audio_bitrate = "128k"
 $video_base_bitrate = "750k"
 $has_audio = $false
-
 
 # Function to get video resolution using ffprobe
 function Get-VideoResolution {
@@ -45,39 +47,45 @@ function Get-VideoResolution {
 
 # Helper Function: Encode Video (to intermediate MP4)
 function Encode-Video {
-    param (
-        [string]$inputFile,
-        [string]$outputFile,
-        [string]$resolution,
-        [string]$bitrate
-    )
+  param (
+    [string]$inputFile,
+    [string]$outputFile,
+    [string]$resolution,
+    [string]$bitrate
+   )
 
-    #Check if the outputfile already exists. if so, dont run
-    if (Test-Path $outputFile) {
-      Write-Host "Output file '$outputFile' already exists. Skipping encoding."
-      return # Exit the function
-    }
+   #Check if the outputfile already exists. if so, dont run
+   if (Test-Path $outputFile) {
+    Write-Host "Output file '$outputFile' already exists. Skipping encoding."
+    return # Exit the function
+   }
 
-    $params = ""
-    if ($starttime -and $starttime -ne "0") {
-        $params += "-ss $($starttime) "
-    }
-    $params += "-i `"$inputFile`" "
-    if ($endtime -and $endtime -ne "0") {
-        $params += "-t $($endtime) "
-    }
+   $params = ""
+   if ($starttime -and $starttime -ne "0") {
+     $params += "-ss $($starttime) "
+   }
+   $params += "-i `"$inputFile`" "
+   if ($endtime -and $endtime -ne "0") {
+     $params += "-t $($endtime) "
+   }
 
-    $params += "-c:v libx264 -s $resolution -b:v $bitrate $x264_DASH_PARAMS -an -f mp4 `"$outputFile`"" #Removed dash 1
-    Write-Host "Creating $outputFile | $ffmpeg_path $params"
-    # -verbose can be added for debugging.
-    try {
-        $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params" -PassThru # -verbose
-        if ($output.ExitCode -ne 0) {
-            Write-Error "FFmpeg failed with exit code $($output.ExitCode)"
-        }
-    } catch {
-        Write-Error "Error running FFmpeg: $($_.Exception.Message)"
-    }
+  $params += "$videoArgs -s $resolution -b:v $bitrate -an -f mp4 `"$outputFile`""
+   Write-Host "Creating $outputFile | $ffmpeg_path $params"
+   # -verbose can be added for debugging.
+   try {
+     $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params" -PassThru # -verbose
+     if ($output.ExitCode -ne 0) {
+       Write-Error "FFmpeg failed with exit code $($output.ExitCode)"
+     }
+   } catch {
+     Write-Error "Error running FFmpeg: $($_.Exception.Message)"
+   }
+
+   if (Test-Path $outputFile) {
+     # Add Metadata Back In With ExifTool
+     Write-Host "Adding 360 Metadata"
+     & $exiftool_path -tagsFromFile "$inputFile" -sphericalvideoxml "$outputFile"
+   }
 }
 
 # Function to build the packager command string for a single resolution
@@ -120,29 +128,29 @@ function Test-AudioStream {
 
 # --- Main Script ---
 
-If (Test-Path $input) {
-    $directory = Split-Path -Path $input
-    $basename = [io.path]::GetFileNameWithoutExtension($input)
-    $output_folder = Join-Path $directory $basename
-    $encoded_folder = Join-Path $output_folder $basename
-    Write-Host "$directory - $basename - $output_folder"
+If (Test-Path $originalFullName) {
+    $directory = Split-Path -Path $originalFullName
+    $basename = [io.path]::GetFileNameWithoutExtension($originalFullName)
+    $temp_encode_folder = Join-Path $temp_folder $basename
+    $finished_output_folder = Join-Path $output_folder $basename
+    Write-Host "$directory - $basename - $temp_encode_folder"
 
     # Create output directory
-    if (-not (Test-Path $output_folder)) {
-        New-Item -ItemType Directory -Force -Path $output_folder | Out-Null
+    if (-not (Test-Path $temp_encode_folder)) {
+        New-Item -ItemType Directory -Force -Path $temp_encode_folder | Out-Null
     }
 
     # Create output directory
-    if (-not (Test-Path $encoded_folder)) {
-        New-Item -ItemType Directory -Force -Path $encoded_folder | Out-Null
+    if (-not (Test-Path $finished_output_folder)) {
+        New-Item -ItemType Directory -Force -Path $finished_output_folder | Out-Null
     }
 
     # Check for Audio Stream in Source
-    $has_audio = Test-AudioStream -filePath $input
+    $has_audio = Test-AudioStream -filePath $originalFullName
     Write-Host "Source file has audio: $($has_audio)"
 
     # Get Source Resolution
-    $sourceResolution = Get-VideoResolution -filePath $input
+    $sourceResolution = Get-VideoResolution -filePath $originalFullName
     if ($sourceResolution) {
         $sourceWidth = $sourceResolution.Width
         $sourceHeight = $sourceResolution.Height
@@ -196,7 +204,7 @@ If (Test-Path $input) {
 
         foreach ($res in $resolutions) {
             $safe_resolution = $res.Res -replace "x", "_" # Create a safe name for the resolution
-            $outfile = Join-Path $output_folder "$($basename)_$($safe_resolution)_$($res.Bitrate).mp4" # Changed to use Join-Path
+            $outfile = Join-Path $temp_encode_folder "$($basename)_$($safe_resolution)_$($res.Bitrate).mp4" # Changed to use Join-Path
 
             #Checks if the $outfile alread exists.
             if (Test-Path $outfile) {
@@ -204,7 +212,7 @@ If (Test-Path $input) {
                 $encoded_files[$res.Res + '_' + $res.Bitrate] = $outfile # Store the path for packager input
             }
             else{
-                Encode-Video -inputFile $input -outputFile $outfile -resolution $($res.Res) -bitrate $($res.Bitrate)
+                Encode-Video -inputFile $originalFullName -outputFile $outfile -resolution $($res.Res) -bitrate $($res.Bitrate)
                 $encoded_files[$res.Res + '_' + $res.Bitrate] = $outfile # Store the path for packager input
             }
 
@@ -215,7 +223,7 @@ If (Test-Path $input) {
 
         if ($has_audio) {
 
-            $outfile_audio = Join-Path $output_folder "audio.mp4"
+            $outfile_audio = Join-Path $temp_encode_folder "audio.mp4"
 
             if (Test-Path $outfile_audio) {
                 Write-Host "Output file '$outfile_audio' already exists. Skipping audio encoding."
@@ -226,7 +234,7 @@ If (Test-Path $input) {
                 if ($starttime -and $starttime -ne "0") {
                     $params_audio += "-ss $($starttime) "
                 }
-                $params_audio += "-i `"$input`" " # Use originalFullName
+                $params_audio += "-i `"$originalFullName`" " # Use originalFullName
                 if ($endtime -and $endtime -ne "0") {
                     $params_audio += "-t $($endtime) "
                 }
@@ -257,7 +265,7 @@ If (Test-Path $input) {
         foreach ($res in $resolutions) {
             $safe_resolution = $res.Res -replace "x", "_"
             $key = $res.Res + '_' + $res.Bitrate
-            $packager_commands += Build-PackagerCommand -inputFile $encoded_files[$key] -resolution $($res.Res) -output_folder $output_folder -safe_resolution $safe_resolution -bitrate $res.Bitrate
+            $packager_commands += Build-PackagerCommand -inputFile $encoded_files[$key] -resolution $($res.Res) -output_folder $temp_encode_folder -safe_resolution $safe_resolution -bitrate $res.Bitrate
         }
 
         # Add audio input stream if it has audio
@@ -267,8 +275,8 @@ If (Test-Path $input) {
 
 
         # Check if the master playlist file already exists. if so, dont run.
-        $hls_master_playlist_output = Join-Path $encoded_folder "Play.m3u8"
-        $mpd_output = Join-Path $encoded_folder "Play.mpd"
+        $hls_master_playlist_output = Join-Path $finished_output_folder "Play.m3u8"
+        $mpd_output = Join-Path $finished_output_folder "Play.mpd"
 
         if (Test-Path $hls_master_playlist_output) {
             Write-Host "Output file '$hls_master_playlist_output' already exists. Skipping packager."
@@ -290,7 +298,7 @@ If (Test-Path $input) {
 
             Write-Host "Packager command: $packager_path $($packager_arguments)"
             try {
-                $output = Start-Process -Wait -FilePath $packager_path -ArgumentList $packager_arguments -WorkingDirectory $encoded_folder -PassThru
+                $output = Start-Process -Wait -FilePath $packager_path -ArgumentList $packager_arguments -WorkingDirectory $finished_output_folder -PassThru
                 if ($output.ExitCode -ne 0) {
                     Write-Error "Packager failed with exit code $($output.ExitCode)"
                 }
@@ -303,22 +311,22 @@ If (Test-Path $input) {
         # --- Create Thumbnail and Fallback MP4 (if needed) ---
         # Thumbnail creation remains the same. Fallback MP4 creation is optional.
 
-        $thumbnail_name = Join-Path $encoded_folder "thumbnail.jpg" # added correct dir
+        $thumbnail_name = Join-Path $finished_output_folder "thumbnail.jpg" # added correct dir
         #Check if the $thumbnail_name file already exists. if so, dont run.
         if (Test-Path $thumbnail_name) {
             Write-Host "Output file '$thumbnail_name' already exists. Skipping thumbnail creation."
         }
 
         else{
-            $thumbnail_width = 320
-            $thumbnail_height = 180
+            $thumbnail_width = 640
+            $thumbnail_height = 360
 
             $params8 = ""
             if ($starttime -and $starttime -ne "0") {
                 $params8 += "-ss $($starttime) "
             }
 
-            $params8 += "-i `"$input`" -vf scale=$($thumbnail_width):$($thumbnail_height) -qscale:v 6 -vframes 1 `"$thumbnail_name`""
+            $params8 += "-i `"$originalFullName`" -vf scale=$($thumbnail_width):$($thumbnail_height) -qscale:v 6 -vframes 1 `"$thumbnail_name`""
             try {
                 $output = Start-Process -Wait -FilePath $ffmpeg_path -ArgumentList "$params8" -PassThru # -verbose
                 if ($output.ExitCode -ne 0) {
@@ -331,7 +339,7 @@ If (Test-Path $input) {
 
 
 
-        $outfile0 = Join-Path $encoded_folder "fallback.mp4" # added correct dir
+        $outfile0 = Join-Path $finished_output_folder "fallback.mp4" # added correct dir
         #Check if the fallback.mp4 file already exists. if so, dont run.
         if (Test-Path $outfile0) {
             Write-Host "Output file '$outfile0' already exists. Skipping fallback creation."
@@ -343,7 +351,7 @@ If (Test-Path $input) {
             if ($starttime -and $starttime -ne "0") {
                 $params0 += "-ss $($starttime) "
             }
-            $params0 += "-i `"$input`" " #Use originalFullName
+            $params0 += "-i `"$originalFullName`" " #Use originalFullName
             if ($endtime -and $endtime -ne "0") {
                 $params0 += "-t $($endtime) "
             }
