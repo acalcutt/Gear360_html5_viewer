@@ -1,5 +1,6 @@
 ﻿# Configuration
-$originalFullName = "\\192.168.0.12\e\360 Videos\Origional Files\ATV\2019-06-15 - Byron ME\360_0061.MP4" # Replace with your input file
+$originalFullName = "\\192.168.0.12\e\360 Videos\Origional Files\Drone\10-01-2017\eq\360_0037.mp4" # Replace with your input file
+$source_folder = Split-Path -Path $originalFullName -Parent
 $temp_folder = $source_folder + '\temp'
 $output_folder = $source_folder + '\encoded'
 $starttime = "0"

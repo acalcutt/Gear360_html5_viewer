@@ -1,5 +1,5 @@
 ﻿# Configuration
-$source_folder = "\\192.168.0.12\e\360 Videos\Origional Files\output" # Replace with your input folder
+$source_folder = "\\192.168.0.12\e\360 Videos\Origional Files\ATV\2020-09-15 - Lee ME" # Replace with your input folder
 $temp_folder = $source_folder + '\temp'
 $output_folder = $source_folder + '\encoded'
 $starttime = "0"
