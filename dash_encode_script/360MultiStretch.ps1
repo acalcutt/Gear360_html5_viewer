@@ -32,12 +32,85 @@ function Get-FirstFilePath {
     $Files = Get-ChildItem -Path $DirectoryPath -File -Filter "*$extension"
     
     if ($Files.Count -eq 0) {
-        Write-Host "Nenhum arquivo do tipo '$extension' encontrado no diretório '$DirectoryPath'."
+        Write-Host "No files of type '$extension' found in the directory '$DirectoryPath'."
         return $null
     }
     
     $FirstFile = $Files | Select-Object -First 1
     return $FirstFile.FullName
+}
+
+function Show-CustomFolderDialog {
+    param (
+        [string]$Description,
+        [string]$InitialDirectory
+    )
+
+    # Create the form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = "Select Folder"
+    $form.Width = 600
+    $form.Height = 200
+    $form.StartPosition = "CenterScreen"
+
+    # Create the label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Text = "Enter Folder Path:"
+    $label.Location = New-Object System.Drawing.Point(10, 20)
+    $label.AutoSize = $true
+    $form.Controls.Add($label)
+
+    # Create the textbox
+    $textBox = New-Object System.Windows.Forms.TextBox
+    $textBox.Location = New-Object System.Drawing.Point(150, 20)
+    $textBox.Width = 300
+    $form.Controls.Add($textBox)
+
+    # Create the browse button
+    $browseButton = New-Object System.Windows.Forms.Button
+    $browseButton.Text = "Browse..."
+    $browseButton.Location = New-Object System.Drawing.Point(460, 20)
+
+    $browseButton.Add_Click({
+        $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog
+        $folderBrowserDialog.ShowNewFolderButton = $true
+        $folderBrowserDialog.Description = $Description  # Use the passed description
+        $folderBrowserDialog.RootFolder = [System.Environment+SpecialFolder]::Desktop
+        $folderBrowserDialog.SelectedPath = $InitialDirectory # Use the initial directory
+        $result = $folderBrowserDialog.ShowDialog()
+
+        if ($result -eq "OK") {
+            $textBox.Text = $folderBrowserDialog.SelectedPath
+        }
+    })
+    $form.Controls.Add($browseButton)
+
+    # Create the OK button
+    $okButton = New-Object System.Windows.Forms.Button
+    $okButton.Text = "OK"
+    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    $okButton.Location = New-Object System.Drawing.Point(200, 80)
+    $form.Controls.Add($okButton)
+
+    # Create the Cancel button
+    $cancelButton = New-Object System.Windows.Forms.Button
+    $cancelButton.Text = "Cancel"
+    $cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+    $cancelButton.Location = New-Object System.Drawing.Point(300, 80)
+    $form.Controls.Add($cancelButton)
+
+    # Set the form's AcceptButton and CancelButton
+    $form.AcceptButton = $okButton
+    $form.CancelButton = $cancelButton
+
+    # Show the form as a dialog
+    $result = $form.ShowDialog()
+
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        return $textBox.Text  # Return the path entered in the textbox
+    } else {
+        return $null # Return null if the user cancelled
+    }
 }
 
 #Selections of:
@@ -159,18 +232,17 @@ if ($Mode -eq "SingleFile") {
 }
 elseif ($Mode -eq "FolderImages") {
     # Ask for input folder (images)
-    $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog
-    $folderBrowserDialog.Description = "Select folder containing image files"
-    $folderBrowserDialog.RootFolder = [System.Environment+SpecialFolder]::Desktop
-    $desktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyPictures)
-    $folderBrowserDialog.SelectedPath = $desktopPath
-    #$folderBrowserDialog.SelectedPath = $InvokeDir
-    $result = $folderBrowserDialog.ShowDialog()
+    $description = "Select folder containing image files"
+    $initialDirectory = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyPictures)
+    $InputPath = Show-CustomFolderDialog -Description $description -InitialDirectory $initialDirectory
 
-    if ($result -eq "OK") {
-        $InputPath = $folderBrowserDialog.SelectedPath
-        $desktopPath = $folderBrowserDialog.SelectedPath
+    if ($InputPath) {
+        $desktopPath = $InputPath  # Store the selected path
         $InputFile = Get-FirstFilePath -DirectoryPath $InputPath -FileType "Image"
+        if (!$InputFile) {
+            Write-Warning "No image files found in the selected folder."
+            # You might want to handle this case (e.g., exit or re-prompt)
+        }
     }
     else {
         Write-Host "No folder selected. Exiting."
@@ -179,20 +251,17 @@ elseif ($Mode -eq "FolderImages") {
 }
 elseif ($Mode -eq "FolderVideos") {
     # Ask for input folder (videos)
-    $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog
-    $folderBrowserDialog.Description = "Select folder containing video files"
-    $folderBrowserDialog.RootFolder = [System.Environment+SpecialFolder]::Desktop
-    $desktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyVideos)
-    $folderBrowserDialog.SelectedPath = $desktopPath
-    #$folderBrowserDialog.SelectedPath = [System.Environment+SpecialFolder]::MyDocuments
-    #$folderBrowserDialog.SelectedPath = [System.Environment+SpecialFolder]::Desktop
-    #$folderBrowserDialog.SelectedPath = $InvokeDir
-    $result = $folderBrowserDialog.ShowDialog()
+    $description = "Select folder containing video files"
+    $initialDirectory = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyVideos)
+    $InputPath = Show-CustomFolderDialog -Description $description -InitialDirectory $initialDirectory
 
-    if ($result -eq "OK") {
-        $InputPath = $folderBrowserDialog.SelectedPath
-        $desktopPath = $folderBrowserDialog.SelectedPath
+    if ($InputPath) {
+        $desktopPath = $InputPath  # Store the selected path
         $InputFile = Get-FirstFilePath -DirectoryPath $InputPath -FileType "Video"
+        if (!$InputFile) {
+            Write-Warning "No video files found in the selected folder."
+            # You might want to handle this case (e.g., exit or re-prompt)
+        }
     }
     else {
         Write-Host "No folder selected. Exiting."
@@ -200,21 +269,14 @@ elseif ($Mode -eq "FolderVideos") {
     }
 }
 
-#Output
+# Output
 if ([string]::IsNullOrEmpty($OutputPath)) {
-    Add-Type -AssemblyName System.Windows.Forms
-    $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog
-    $folderBrowserDialog.Description = "Select OUTPUT folder for stretched files"
-    $folderBrowserDialog.RootFolder = [System.Environment+SpecialFolder]::Desktop
-    $folderBrowserDialog.SelectedPath = $desktopPath
-    #$folderBrowserDialog.SelectedPath = $InvokeDir
-    $result = $folderBrowserDialog.ShowDialog()
+    $description = "Select OUTPUT folder for stretched files"
+    $initialDirectory = $desktopPath  # Use the last used desktop path
+    $OutputPath = Show-CustomFolderDialog -Description $description -InitialDirectory $initialDirectory
 
-    if ($result -eq "OK") {
-        $OutputPath = $folderBrowserDialog.SelectedPath
-    }
-    else {
-        Write-Host "No folder selected. Exitting."
+    if (!$OutputPath) {
+        Write-Host "No folder selected. Exiting."
         exit
     }
 }
@@ -223,16 +285,17 @@ if ([string]::IsNullOrEmpty($OutputPath)) {
 #HERE!!!! ITS HERE!!!!! HEY!!!!!! HERE!!! uuuuHHHHHHHHUUUUUOOOOOOOOOUUUUUUUUU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #paths, filenames (and camera settings) for user config ###########################################################################################
-$ffmpegExe = ".\bin\ffmpeg.exe"       #considers those files acessible at .\bin\
-$ffprobeExe = ".\bin\ffprobe.exe"     #Or YOU adjust to according path location (alternatively PATH ambient variable and adjust here).
-$exiftoolExe = ".\bin\exiftool.exe"   
+$BinPath = $PSScriptRoot + '\bin'
+$ffmpegExe = $BinPath + "\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe" # Needed for both encoding and checking
+$ffprobeExe = $BinPath + "\ffmpeg-master-latest-win64-gpl-shared\bin\ffprobe.exe"
+$exiftoolExe = $BinPath + "\exiftool.exe"   
 
 $SUFFIX = "Stretched"           #Add this suffix to output filename
 
 #FINE TUNNING AND ADJUSTMENTS OF OUTPUT############################################################################################################
-$WIB = 6.5		#[SMOOTHNESS of transition beetween Left and Right]
+$WIB = 3		#[SMOOTHNESS of transition beetween Left and Right]
 #WIB: is Width of interpolation band in degrees (Overlapping)
-#WIB: should (lol roflol) be lesser than overlap [ =< (FOV-180°)]
+#WIB: should (lol roflol) be lesser than overlap [ =< (FOV-180Â°)]
 #WIB Optimal: is half of FOV-180.
 #WIB Fun: beetween 2 to 12, try others!
 #WIB: for darkened photos, higher are better,for lit, the smaller are better
@@ -261,15 +324,15 @@ $FOV = 193	    # FOV is Horizontal/Vertical fisheye degree field of view (adjust
 # Internal use #
 $InvokeDir = $PWD.Path
 
-# Extrai extensão
+# Extract extension
 if ([string]::IsNullOrEmpty($InputFile)) {
-    Write-Host "O nome do arquivo de entrada é inválido." #inválido
-    exit
+  Write-Host "The input file name is invalid." #invalid
+  exit
 }
-$lastDotIndex = $InputFile.LastIndexOf('.') #Sem extensão
+$lastDotIndex = $InputFile.LastIndexOf('.') #No extension
 if ($lastDotIndex -lt 0) {
-    Write-Host "O nome do arquivo de entrada não contém uma extensão."
-    exit
+  Write-Host "The input file name does not contain an extension."
+  exit
 }
 $extensionIndex = $InputFile.LastIndexOf('.')
 if ($extensionIndex -eq -1) {
@@ -290,7 +353,7 @@ $LeftFisheyeRemapFile = Join-Path $TempDir "LeftFisheyeRemap$extension"	#Move le
 $DualFisheyeRemapFile = Join-Path $TempDir "DualFisheyeRemap$extension"
 $EquirectangularFile = Join-Path $TempDir $InputFileNameOnly			#Create output but still without metadata.
 
-#conteúdo para pano.xml
+#conteÃºdo para pano.xml
 $360Metadata = @'
 <?xml version="1.0"?>
 <rdf:SphericalVideo xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:GSpherical="http://ns.google.com/videos/1.0/spherical/">
@@ -350,6 +413,8 @@ function PerformCameraMapping {
     } else {
         $encoder = "libx264"
     }
+    Write-Host "encoder: $encoder"
+
 
     #& $ffmpegExe -f lavfi -i nullsrc=size=$($Height)`x$($Width/2) -vf "geq='clip(128-128/$($WIB)*(180-$($FOV)/($($Height)/2)*hypot(X-$($Height)/2,Y-$($Height)/2)),0,255)',v360=input=fisheye:output=e:ih_fov=$($FOV):iv_fov=$($FOV)" -frames:v 1 -update 1 -y $MergeMapFile
     & $ffmpegExe -f lavfi -i nullsrc=size=$($Height)`x$($Width/2) -vf "format=gray8,geq='clip(128-128/$($WIB)*(180-$($FOV)/($($Height)/2)*hypot(X-$($Height)/2,Y-$($Height)/2)),0,255)',v360=input=fisheye:output=e:ih_fov=$($FOV):iv_fov=$($FOV)" -frames:v 1 -update 1 -y $MergeMapFile
@@ -388,36 +453,38 @@ function PerformFileTransformations {
     }
 
     if ($FileType -eq "video") {
-        $videoArgs = "-c:v $encoder"
+        $videoArgs = @("-c:v", $encoder)
     } elseif ($FileType -eq "image") {
-        $videoArgs = ""
+        $videoArgs = @()
     }
+    Write-Host "videoArgs: $($videoArgs -join ' ')"
      
     # Extracts Left fisheye from input
     #& $ffmpegExe -i $InputFile -vf crop=iw/2:ih:0:0 -q:v 1 -y $LeftEyeFile
-    & $ffmpegExe -i $InputFile -vf crop=iw/2:ih:0:0  $videoArgs -q:v 1 -y $LeftEyeFile
+    & $ffmpegExe -i $InputFile -vf crop=iw/2:ih:0:0  @videoArgs -q:v 1 -y $LeftEyeFile
 
     Wait -For $LeftEyeFile
     Write-Host "Extracts Left fisheye from input ended"
 
     #Extracts Right fisheye from input
     #& $ffmpegExe -i $InputFile -vf crop=iw/2:ih:iw/2:0 -q:v 1 -y $RightEyeFile
-    & $ffmpegExe -i $InputFile -vf crop=iw/2:ih:iw/2:0  $videoArgs -q:v 1 -y $RightEyeFile
+    & $ffmpegExe -i $InputFile -vf crop=iw/2:ih:iw/2:0  @videoArgs -q:v 1 -y $RightEyeFile
     Wait -For $RightEyeFile
     Write-Host "Extracts Right fisheye from input ended"
 
     # Remap Left Fisheye RGB
     #& $ffmpegExe -i $LeftEyeFile -i $XmapFile -i $YmapFile -q:v 1 -y $LeftFisheyeRemapFile
     #& $ffmpegExe -i $LeftEyeFile -i $XmapFile -i $YmapFile -lavfi "format=pix_fmts=rgb24, remap" -q:v 1 -y $LeftFisheyeRemapFile
-    & $ffmpegExe -i $LeftEyeFile -i $XmapFile -i $YmapFile -lavfi "format=pix_fmts=rgb24, remap"  $videoArgs -q:v 1 -y $LeftFisheyeRemapFile
+    #& $ffmpegExe -i $LeftEyeFile -i $XmapFile -i $YmapFile -lavfi "format=pix_fmts=rgb24, remap" $videoArgs -q:v 1 -y $LeftFisheyeRemapFile
     #& $ffmpegExe -i $LeftEyeFile -i $XmapFile -i $YmapFile -lavfi "format=pix_fmts=rgb48le, remap" -q:v 1 -y $LeftFisheyeRemapFile
+    & $ffmpegExe -i $LeftEyeFile -i $XmapFile -i $YmapFile -lavfi "format=pix_fmts=rgb24, remap" @videoArgs -q:v 1 -y $LeftFisheyeRemapFile
 
     Wait -For $LeftFisheyeRemapFile
     Write-Host "Remap Left Fisheye RGB ended"
     # Remap Dual Fisheye Stacked
    
     #&$ffmpegExe -i $LeftFisheyeRemapFile -i $RightEyeFile -filter_complex "[1:v]scale=-1:$($Height)[scaled];[0:v][scaled]hstack" -q:v 1 -y $DualFisheyeRemapFile
-    &$ffmpegExe -i $LeftFisheyeRemapFile -i $RightEyeFile -filter_complex "[1:v]scale=-1:$($Height)[scaled];[0:v][scaled]hstack"  $videoArgs -q:v 1 -y $DualFisheyeRemapFile
+    &$ffmpegExe -i $LeftFisheyeRemapFile -i $RightEyeFile -filter_complex "[1:v]scale=-1:$($Height)[scaled];[0:v][scaled]hstack" @videoArgs -q:v 1 -y $DualFisheyeRemapFile
     #&$ffmpegExe -i $LeftFisheyeRemapFile -i $RightEyeFile -filter_complex "[1:v]scale=-1:$($Height)[scaled];[0:v][scaled]hstack=format=rgb48le" -q:v 1 -y $DualFisheyeRemapFile
     Wait -For $DualFisheyeRemapFile
     Write-Host "Remap Dual Fisheye Stacked ended"
@@ -426,7 +493,7 @@ function PerformFileTransformations {
     #& $ffmpegExe -i $DualFisheyeRemapFile -i $MergeMapFile -lavfi "[0]split[a][b];[a]crop=ih:iw/2:0:0,v360=input=fisheye:output=e:ih_fov=$($FOV):iv_fov=$($FOV):rorder=rpy:yaw=$($LeftYaw):pitch=$($LeftPitch):roll=$($LeftRoll)[c];[b]crop=ih:iw/2:iw/2:0,v360=input=fisheye:output=e:yaw=180+$($RightYaw):pitch=$($RightPitch):roll=$($RightRoll):ih_fov=$($FOV):iv_fov=$($FOV)[d];[1]format=gbrp[e];[c][d][e]maskedmerge" -q:v 1 -y $EquirectangularFile
     #& $ffmpegExe -i $DualFisheyeRemapFile -i $MergeMapFile -lavfi "[0]format=rgb24,split[a][b];[a]crop=ih:iw/2:0:0,v360=input=fisheye:output=e:ih_fov=$($FOV):iv_fov=$($FOV):rorder=rpy:yaw=$($LeftYaw):pitch=$($LeftPitch):roll=$($LeftRoll)[c];[b]crop=ih:iw/2:iw/2:0,v360=input=fisheye:output=e:yaw=180+$($RightYaw):pitch=$($RightPitch):roll=$($RightRoll):ih_fov=$($FOV):iv_fov=$($FOV)[d];[1]format=gbrp[e];[c][d][e]maskedmerge" -q:v 1 -y $EquirectangularFile
     #& $ffmpegExe -i $DualFisheyeRemapFile -i $MergeMapFile -lavfi "[0]format=rgb48le,split[a][b];[a]crop=ih:iw/2:0:0,v360=input=fisheye:output=e:ih_fov=$($FOV):iv_fov=$($FOV):rorder=rpy:yaw=$($LeftYaw):pitch=$($LeftPitch):roll=$($LeftRoll)[c];[b]crop=ih:iw/2:iw/2:0,v360=input=fisheye:output=e:yaw=180+$($RightYaw):pitch=$($RightPitch):roll=$($RightRoll):ih_fov=$($FOV):iv_fov=$($FOV)[d];[1]format=gbrp[e];[c][d][e]maskedmerge" -q:v 1 -y $EquirectangularFile
-    & $ffmpegExe -i $DualFisheyeRemapFile -i $MergeMapFile -lavfi "[0]format=rgb48le,split[a][b];[a]crop=ih:iw/2:0:0,v360=input=fisheye:output=e:ih_fov=$($FOV):iv_fov=$($FOV):rorder=rpy:yaw=$($LeftYaw):pitch=$($LeftPitch):roll=$($LeftRoll)[c];[b]crop=ih:iw/2:iw/2:0,v360=input=fisheye:output=e:yaw=180+$($RightYaw):pitch=$($RightPitch):roll=$($RightRoll):ih_fov=$($FOV):iv_fov=$($FOV)[d];[1]format=gbrp[e];[c][d][e]maskedmerge"  $videoArgs -q:v 1 -y $EquirectangularFile
+    & $ffmpegExe -i $DualFisheyeRemapFile -i $MergeMapFile -lavfi "[0]format=rgb48le,split[a][b];[a]crop=ih:iw/2:0:0,v360=input=fisheye:output=e:ih_fov=$($FOV):iv_fov=$($FOV):rorder=rpy:yaw=$($LeftYaw):pitch=$($LeftPitch):roll=$($LeftRoll)[c];[b]crop=ih:iw/2:iw/2:0,v360=input=fisheye:output=e:yaw=180+$($RightYaw):pitch=$($RightPitch):roll=$($RightRoll):ih_fov=$($FOV):iv_fov=$($FOV)[d];[1]format=gbrp[e];[c][d][e]maskedmerge" @videoArgs -q:v 1 -y $EquirectangularFile
 
     Wait -For $EquirectangularFile
     Write-Host "To equirectangular projection ended"
@@ -439,34 +506,13 @@ function PerformFileTransformations {
         & $exiftoolExe -tagsfromfile $360MetadataFile -all:all -o $OutputFile $EquirectangularFile
     }
     else {
-        Write-Host "Tipo de arquivo não suportado: $extension"
+        Write-Host "Unsupported file type: $extension"
         exit
     }
     Wait -For $OutputFile
     Write-Host "Re-insert 360degree metadata ended"
 }
 Add-Type -AssemblyName System.Windows.Forms
-
-function contrast ($brighness) {
-    $data = [System.Text.Encoding]::ASCII.GetBytes($brighness)
-    $out = [Convert]::ToBase64String($data)
-    return $out
-}
-
-function brightness ($contrast) {
-    $data = [Convert]::FromBase64String($contrast)
-    $out = [System.Text.Encoding]::ASCII.GetString($data)
-    return $out
-}
-
-function enLight {
-    param (
-        [string]$InputString
-    )
-    $rgbscode = contrast $InputString
-    Write-Host "Brightness: $InputString"
-    Write-Host "Contrast: $rgbscode"
-}
 
 function Finish {
     if ($Mode -eq "SingleFile") {
@@ -485,7 +531,7 @@ function Finish {
 
     function Show-Dialog {
         $form = New-Object Windows.Forms.Form
-        $form.Text = brightness("Qmxlc3Npbmc=")
+        $form.Text = "Finished"
         $form.Width = 600
         $form.Height = 200
         $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedSingle
@@ -493,32 +539,24 @@ function Finish {
         $form.TopMost = $true
 
         $label = New-Object Windows.Forms.Label
-        $label.Text = brightness("U2NyaXB0IGVuZGVkIQ==")
+        $label.Text = "Script ended"
         $label.Font = New-Object System.Drawing.Font("Arial", 12, [System.Drawing.FontStyle]::Bold)
         $label.AutoSize = $true
         $label.Location = New-Object Drawing.Point(240, 15)
 
-        $label2 = New-Object Windows.Forms.Label
-        $label2.Text = brightness("TWF5IG91ciBMb3JkIEplc3VzIENocmlzdCB0aGUgTWVzc2lhaCBhbmQgU29uIG9mIEdvZCwgYmxlc3MgeW91ISA6KQ==")
-        $label2.Font = New-Object System.Drawing.Font("Arial", 12, [System.Drawing.FontStyle]::Bold)
-        $label2.AutoSize = $true
-        $label2.Location = New-Object Drawing.Point(15, 45)
-
         $acceptButton = New-Object Windows.Forms.Button
-        $acceptButton.Text = brightness("WWVzISBJIGFjY2VwdCBKZXN1cyBDaHJpc3QgYXMgbXkgR29kIGFuZCBzYXZpb3VyIQ==")
+        $acceptButton.Text = "Close"
         $acceptButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
         $acceptButton.Font = New-Object System.Drawing.Font("Arial", 12, [System.Drawing.FontStyle]::Bold)
         $acceptButton.Location = New-Object Drawing.Point(120, 90)
         $acceptButton.AutoSize = $true
 
         $form.Controls.Add($label)
-        $form.Controls.Add($label2)
         $form.Controls.Add($acceptButton)
 
         $result = $form.ShowDialog()
 
         if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
-            Write-Host (brightness "RXhpdGluZyBwcm9ncmFtLi4u")
             exit
         }
     }
@@ -572,17 +610,28 @@ function GetSize {
     return $Width, $Height
 }
 
-# Função para processar um único arquivo
+# Function to process a single file
 function ProcessFile {
-    # Mapeamento baseado em câmera
-    $Width, $Height = GetSize $InputFile
-    PerformCameraMapping -FOV $FOV -WIB $WIB -Height $Height -Width $Width -LeftPitch $LeftPitch -MergeMapFile $MergeMapFile -XmapFile $XmapFile -YmapFile $YmapFile
+  # Camera-based mapping
+  $Width, $Height = GetSize $InputFile
+  PerformCameraMapping -FOV $FOV -WIB $WIB -Height $Height -Width $Width -LeftPitch $LeftPitch -MergeMapFile $MergeMapFile -XmapFile $XmapFile -YmapFile $YmapFile
 
-    # Transformação baseada no arquivo
-    $OutputFile = Join-Path $OutputPath "$($InputFileNameOnly -replace '\.[^.]+$')-$SUFFIX$extension"
-    PerformFileTransformations -InputFile $InputFile -OutputFile $OutputFile
+   # Determine file type based on extension
+   $extension = [System.IO.Path]::GetExtension($InputFile).ToLower()
+   if ($extension -eq ".mp4") {
+      $FileType = "Video"
+   } elseif ($extension -eq ".jpg") {
+      $FileType = "Image"
+   } else {
+      Write-Host "Unsupported file type: $extension"
+      return # Exit function if file type is unsupported
+   }
 
-    Write-Host "Processamento do arquivo concluído: $InputFile"
+  # Transformation based on the file
+  $OutputFile = Join-Path $OutputPath "$($InputFileNameOnly -replace '\.[^.]+$')-$SUFFIX$extension"
+  PerformFileTransformations -InputFile $InputFile -OutputFile $OutputFile
+
+  Write-Host "File processing complete: $InputFile"
 }
 
 function ProcessFolder {
@@ -595,7 +644,7 @@ function ProcessFolder {
 
     $Files = Get-ChildItem -Path $InputPath -File -Filter "*$extension"
     if ($Files.Count -eq 0) {
-        Write-Host "Nenhum arquivo do tipo '$extension' encontrado no diretório '$InputPath'."
+		Write-Host "No files of type '$extension' found in the directory '$InputPath'."
         return
     }
 
@@ -615,7 +664,7 @@ function ProcessFolder {
         PerformCameraMapping -FOV $FOV -WIB $WIB -Height $Height -Width $Width -LeftPitch $LeftPitch -MergeMapFile $MergeMapFile -XmapFile $XmapFile -YmapFile $YmapFile
         $OutputFile = Join-Path $OutputPath "$($InputFile.BaseName)-$SUFFIX$extension"
         PerformFileTransformations -InputFile $InputFile.FullName -OutputFile $OutputFile
-        Write-Host "Processamento do arquivo concluído: $($File.FullName)"
+        Write-Host "File processing complete: $($File.FullName)"
     }
 }
 
@@ -633,7 +682,7 @@ elseif (-not (Test-Path $TempDir)) {
         }
     }
     catch {
-        Write-Host "Erro ao criar o diretório: $_"
+        Write-Host "Error creating the directory: $_"
     }
 }
 else {
