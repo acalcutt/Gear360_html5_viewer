@@ -161,6 +161,61 @@ td {
 	width: 50px;
 }
 
+.inline.nowrap.player-btn.video-icon {
+    white-space: nowrap; /* Keep elements on one line */
+    display: inline-block; /* Allows width and height control while staying inline */
+    /* You can also add margin/padding for spacing between these elements */
+}
+
+.slider {
+    display: inline-block; /* Keeps slider inline */
+    vertical-align: middle; /* Align slider vertically with label */
+}
+
+.canv_slider {
+    width: 75px; /* Fixed width for the slider */
+    display: inline-block; /* Keeps slider inline */
+    vertical-align: middle; /* Align slider vertically with label */
+}
+
+#default_x_view_label,
+#default_y_view_label,
+#default_z_view_label {
+    min-width: 5ch; /* Ensure enough space for 5 characters */
+    width: auto; /* Allow width to adjust based on content, but not smaller than min-width */
+    display: inline-block; /* Crucial: Allows min-width and width to work inline */
+    text-align: center; /* Adjust as needed */
+    vertical-align: middle; /* Align label vertically with slider */
+    margin-left: 5px; /* Space between the slider and label */
+}
+#pbrate,
+#zoom_range_label {
+    min-width: 4ch; /* Ensure enough space for 5 characters */
+    width: auto; /* Allow width to adjust based on content, but not smaller than min-width */
+    display: inline-block; /* Crucial: Allows min-width and width to work inline */
+    text-align: center; /* Adjust as needed */
+    vertical-align: middle; /* Align label vertically with slider */
+    margin-left: 5px; /* Space between the slider and label */
+}
+
+#current {
+    min-width: 6ch; /* Ensure enough space for 5 characters */
+    width: auto; /* Allow width to adjust based on content, but not smaller than min-width */
+    display: inline-block; /* Crucial: Allows min-width and width to work inline */
+    text-align: right; /* Adjust as needed */
+    vertical-align: middle; /* Align label vertically with slider */
+    margin-left: 5px; /* Space between the slider and label */
+    margin-left: 5px; /* Space between the slider and label */
+}
+
+#duration {
+    min-width: 6ch; /* Ensure enough space for 5 characters */
+    width: auto; /* Allow width to adjust based on content, but not smaller than min-width */
+    display: inline-block; /* Crucial: Allows min-width and width to work inline */
+    text-align: left; /* Adjust as needed */
+    vertical-align: middle; /* Align label vertically with slider */
+}
+
 .inline {
 	display: inline;
 }

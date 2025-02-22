@@ -2,7 +2,7 @@
 {include file="menu.tpl"}
 <div class="col content" id="content">
 	<div id="container" ondragstart="return false;" ondrop="return false;">
-		<video autoplay playsinline id="video" class="video_default"></video>
+		<video playsinline id="video" class="video_default"></video>
 		<canvas id="360canvas" class="canvas_default"></canvas>
 		<div id="canvas_message" class="canvas_center"></div>
 		<menu id="controls">
@@ -19,53 +19,63 @@
 				<span id="iconCamView" class="video-icon" title="Source View"><img class="video-button" id="videobtn" src="{$theme_dir}images/video-camera-60.png"></span>
 				<span id="iconFullscreen" class="video-icon" title="Full Screen"><img class="video-button" src="{$theme_dir}images/fit-to-width-60.png"></span>
 				<span id="iconSoundMute" class="video-icon" title="Full Screen"><img class="video-button" id="soundmutebtn" src="{$theme_dir}images/mute-60.png" title="Mute/Unmute"></span>
-				<span class="inline nowrap player-btn video-icon">Volume: <input class="inline" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
-				<span class="inline nowrap player-btn video-icon">Seek: <input id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
-				<span class="inline nowrap player-btn video-icon">Speed: <input id='playbackRate' max="2.5" min="0.1" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1.0x</label></span>
+				<span class="inline nowrap player-btn video-icon">Volume: <input class="slider" id="volume" max="1" min="0" name="volume" step="0.05" type="range" value="1"></span>
+				<span class="inline nowrap player-btn video-icon">Seek: <input class="slider" id="progress-bar" max="100" min="0" oninput="seek(this.value)" step="0.01" type="range" value="0"><label id="current">00:00</label>/<label id="duration">00:00</label></span>
+				<span class="inline nowrap player-btn video-icon">Speed: <input class="slider" id='playbackRate' max="2.5" min="0.1" name='playbackRate' step="0.1" type="range" value="1"><label id="pbrate">1.0x</label></span>
 				<span class="view_controls">
 					<span class="inline nowrap player-btn video-icon">Zoom: <input class="canv_slider" id="zoom_range" type="range" max="3" min=".4" step=".1" value="{$zoom}"><label id="zoom_range_label">{$zoom}x</label></span>
-					<span class="inline nowrap player-btn video-icon">Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="360" min="0" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°</label></span>
-					<span class="inline nowrap player-btn video-icon">Left/Right: <input class="canv_slider" id="default_y_view" type="range" max="360" min="0" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°</label></span>
+					<span class="inline nowrap player-btn video-icon">Up/Down: <input class="canv_slider" id="default_z_view" type="range" max="90" min="-90" step="1" value="{$default_z}"><label id="default_z_view_label">{$default_z}°</label></span>
+					<span class="inline nowrap player-btn video-icon">Left/Right: <input class="canv_slider" id="default_y_view" type="range" max="180" min="-180" step="1" value="{$default_y}"><label id="default_y_view_label">{$default_y}°</label></span>
 					<span class="inline nowrap player-btn video-icon">Rotate: <input class="canv_slider" id="default_x_view" type="range" max="360" min="0" step="1" value="{$default_x}"><label id="default_x_view_label">{$default_x}°</label></span>
 				</span>
 			</span>
 		</menu>
 	</div>
+	<script>
+		window.isEquirectangular = {if $isEquirectangular eq 1}true{else}false{/if};
+	</script>
+	<script src="lib/360-view-video.js" type="module"></script>
 	<script src="lib/hls.min.js"></script>
-	<script src="{if $isEquirectangular eq 1}lib/360-view-video-eq.js{else}lib/360-view-video.js{/if}" type="module"></script>
 	<script>
 		var video = document.getElementById('video');
-		var initialVideoBitrate = {$initialVideoBitrate|default:0}; // Get initial bitrate from Smarty, default to 0 if not set
+		var initialVideoBitrate = {$initialVideoBitrate|default:-1};
+		var autoplay = {$autoplay|default:1};
+		var startTime = {$startTime|default:0};
+
 		var hls = null;
 		if (Hls.isSupported()) {
 			hls = new Hls();
-			hls.loadSource('{$file}');  {* Load the HLS manifest *}
+			hls.loadSource('{$file}'); {* Load the HLS manifest *}
 			hls.attachMedia(video);
 
 			hls.on(Hls.Events.MANIFEST_PARSED, function() {
-			  // Find the closest level index
-			  let bestLevel = -1;
-			  let bestLevelDiff = Infinity;
+				// Find the closest level index
+				let bestLevel = -1;
+				let bestLevelDiff = Infinity;
 
-			  for (let i = 0; i < hls.levels.length; i++) {
-				const level = hls.levels[i];
-				const bitrate = level.bitrate;
-				const diff = Math.abs(bitrate - initialVideoBitrate);
-				console.log('level:' + i + ' bitrate:' + bitrate + ' diff:' + diff);
-				if (diff < bestLevelDiff && bitrate <= initialVideoBitrate) {
-				  bestLevelDiff = diff;
-				  bestLevel = i;
+				for (let i = 0; i < hls.levels.length; i++) {
+					const level = hls.levels[i];
+					const bitrate = level.bitrate;
+					const diff = Math.abs(bitrate - initialVideoBitrate);
+					console.log('level:' + i + ' bitrate:' + bitrate + ' diff:' + diff);
+					if (diff < bestLevelDiff && bitrate <= initialVideoBitrate) {
+						bestLevelDiff = diff;
+						bestLevel = i;
+					}
 				}
-			  }
 
-				//Now config code for start level and play video
-			  if(bestLevel != -1) {
-				hls.startLevel = bestLevel;
-				console.log('bestLevel:' + bestLevel);
-			  }
+				if(bestLevel != -1) {
+					hls.startLevel = bestLevel;
+					console.log('bestLevel:' + bestLevel);
+				}
+
+				//Check to ensure the currentTime = initialTim
+				video.currentTime = startTime;
 
 				video.muted = true;
-				video.play();
+				if (autoplay == 1) {
+					video.play();
+				}
 			});
 
 			hls.on(Hls.Events.ERROR, function(event, data) {
@@ -73,15 +83,31 @@
 			});
 		} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
 			video.src = '{$file}';
-			video.muted = true;
-			video.play();
+			video.addEventListener('loadeddata', function() {
+				video.muted = true;
+				video.currentTime = startTime;
+				if (autoplay == 1) {
+					video.play();
+				}
+			});
+
 		} else {
 			// Use the MP4 fallback source if HLS is not supported at all
 			video.src = '{$video_fallback}';
-			video.type = 'video/mp4';  // Specify the correct MIME type
-			video.muted = true;
-			video.play();
+			video.type = 'video/mp4';
+			video.addEventListener('loadeddata', function() {
+				video.muted = true;
+				video.currentTime = startTime;
+				if (autoplay == 1) {
+					video.play();
+				}
+			});
 		}
+
+		// Wait for the video to load its metadata before initializing Three.js
+		video.addEventListener('loadeddata', function() {
+			video.currentTime = startTime;
+		});
 
 		var urlParams = new URLSearchParams(window.location.search);
 		var url = urlParams.get('file');
@@ -107,6 +133,23 @@
 		function togglePlay() {
 			const playState = video.paused ? 'play' : 'pause';
 			video[playState](); // Call play or paused method
+			updateButton();
+			updateAutoplayParam(video.paused);
+		}
+
+		function updateAutoplayParam(paused) {
+			// Set autoplay value based on video state
+			//If we are playing set the video state to 0 or 1
+			const autoplayValue = (paused) ? 1 : 0;
+
+			//Get the values
+			const urlParams = new URLSearchParams(window.location.search);
+
+			//Sets or updates the value
+			urlParams.set('paused', autoplayValue);
+
+			const newURL = '{$smarty.const.JS_TICK}' + window.location.pathname + '?{$smarty.const.JS_TICK}' + urlParams.toString();
+			history.replaceState(null, '', newURL);
 		}
 
 		function updateButton() {
@@ -160,7 +203,7 @@
 			// Update Text Labels
 			updateProgressTime(this.currentTime, this.duration);
 		}
-		
+
 		function updateProgressTime(currentTime, duration){
 			$("#current").text(formatTime(currentTime)); //Change #current to currentTime
 			$("#duration").text(formatTime(duration));
@@ -200,6 +243,7 @@
 			} else {
 				document.exitFullscreen();
 			}
+			onWindowResize();
 		}
 
 		function toggleSoundMute() {
@@ -212,7 +256,7 @@
 			}
 		}
 
-		
+ 
 
 		function toggleVideo() {
 			$('.video_default').toggleClass('active');
@@ -274,6 +318,12 @@
 			canv_file_forward.addEventListener('click', PlayNextFile);
 			canvfile_backward.addEventListener('click', PlayPrevFile);
 		}
+
+		contentElement.addEventListener('transitionend', function(event) {
+			if (event.propertyName === 'left') {
+				onWindowResize();
+			}
+		});
 
 		// Event listeners
 		video.addEventListener('click', togglePlay);
