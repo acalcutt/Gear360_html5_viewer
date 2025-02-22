@@ -224,8 +224,8 @@ td {
 #controls {
 	bottom: 0;
 	left: 0;
+	right: 10px;
 	position: absolute;
-	width: 100%;
 
 }
 
@@ -549,8 +549,8 @@ MEDIAQUERIES
   display: block; /* Show the menu on mobile screens */
  }
 
-  /* Hide showhidemenubtn1 on smaller screens */
-  #showhidemenubtn1 {
+  /* Hide iconShowHideMenu on smaller screens */
+  #iconShowHideMenu {
    display: none; /* Hide the button on mobile */
   }
 
@@ -608,14 +608,4 @@ MEDIAQUERIES
 
 .php-file-tree LI.ext-m3u8 {
  list-style-image: url(images/film.png);
-}
-
-/* Existing styles for showhidemenubtn1 */
-
-
-/* Hide showhidemenubtn1 on smaller screens */
-@media (max-width: 768px) {
- #showhidemenubtn1 {
-  display: none; /* Hide the button on mobile */
- }
 }
