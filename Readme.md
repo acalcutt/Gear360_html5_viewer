@@ -8,7 +8,7 @@ This project provides a web-based HTML5 player for displaying both 360° videos 
 *   **HLS and DASH Streaming:** Supports adaptive bitrate streaming using HLS (HTTP Live Streaming) and DASH (Dynamic Adaptive Streaming over HTTP) protocols.
 *   **Configuration File:** Easily customize the player's behavior through a central `config.php` file.
 *   **Theming:** Supports theming for customization.
-*   **Initial Viewing Configuration:** Set initial X,Y,Z roation, zoom, autoplay, and starttime.
+*   **Initial Viewing Configuration:** Set initial X,Y,Z rotation, zoom, autoplay, and starttime.
 *   **File Tree Navigation:**  Dynamically generates a file tree menu for easy video/image selection.
 *   **Three.js Integration**: Uses Threejs for 3d rendering
     *   Renders 360 videos and images within a Three.js sphere.
