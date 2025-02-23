@@ -168,7 +168,7 @@ The base code refers to this code in the answer to the following question.
 
 You can control the player's behavior using URL parameters:
 
-*   **`file`:**  Specifies the path to the video or image file to play.  (e.g. `index.php?file=videos/myvideo.mp4`)
+*   **`file`:**  Specifies the path to the video or image file to play.  (e.g. `index.php?file=files/myvideo/myvideo.m3u8`)
 *   **`x`:** Initial X rotation (pan) in degrees (0-360).
 *   **`y`:** Initial Y rotation (tilt) in degrees (-180-180).
 *   **`z`:** Initial Z rotation (roll) in degrees (-90-90).
