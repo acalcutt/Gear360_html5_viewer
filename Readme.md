@@ -67,7 +67,7 @@ This project provides a web-based HTML5 player for displaying both 360° videos 
         *   **`$initialVideoBitrate`:**  The initial video bitrate to use for HLS or DASH streams.  A higher bitrate will result in better quality, but may require a faster internet connection.  Set to `-1` for auto-selection.
         *   **`$initialAudioBitrate`:**  The initial audio bitrate to use for HLS or DASH streams. Set to `-1` for auto-selection.
         *   **`$theme`:**  The name of the theme folder located in the `themes/` directory.
-        *   **`$equirectangular_directories`**: A list of directories that contain equirectangular images to use as background images.
+        *   **`$equirectangular_directories`**: A list of directories that contain equirectangular media. This will include all subfolders. If you want all media treated as equirectangular, set this to  'files/'
         *   **`$allowed`**: Array of allowed file extensions for file tree
         *   **`$excluded`**: Array of files that are not to be shown in the file tree
         *   **`$included`**: Array of files that are to be shown in the file tree
