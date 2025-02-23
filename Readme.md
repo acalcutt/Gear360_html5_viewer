@@ -27,7 +27,7 @@ This project provides a web-based HTML5 player for displaying both 360° videos 
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/acalcutt/Gear360_html5_viewer.git [local folder]
+    git clone https://github.com/acalcutt/360-html5-media-viewer.git [local folder]
     cd [local folder]
     ```
 
