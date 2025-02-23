@@ -44,7 +44,7 @@ This project provides a web-based HTML5 player for displaying both 360° videos 
         $initialAudioBitrate = -1; // Initial audio bitrate. Adjust based on your network conditions. -1 to autoselect.
         $theme = 'default'; // The name of the theme to use.  Themes are located in the `/themes/` directory.
 
-        // Array of directories to treat as equirectangular image sources.  Files in these directories will be treated as 360 images, even if not using *.eq.* naming.
+        // Array of directories to treat as equirectangular image sources.  Files in these directories will be treated as equirectangular 360 images, even if not using *.eq.* naming.
         $equirectangular_directories = array(
         	'files/equirectangular/',
         );
