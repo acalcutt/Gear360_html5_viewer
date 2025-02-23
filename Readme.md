@@ -4,7 +4,7 @@ This project provides a web-based HTML5 player for displaying both 360° videos 
 
 ## Features
 
-*   **360° Video and Image Support:** Play equirectangular or samsung gear 360° videos and images.
+*   **360° Video and Image Support:** Play equirectangular or samsung gear fisheye 360° videos and images.
 *   **HLS and DASH Streaming:** Supports adaptive bitrate streaming using HLS (HTTP Live Streaming) and DASH (Dynamic Adaptive Streaming over HTTP) protocols.
 *   **Configuration File:** Easily customize the player's behavior through a central `config.php` file.
 *   **Theming:** Supports theming for customization.
