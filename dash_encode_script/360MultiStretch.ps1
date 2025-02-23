@@ -42,13 +42,14 @@ function Get-FirstFilePath {
 
 function Show-CustomFolderDialog {
     param (
+        [string]$FormText,
         [string]$Description,
         [string]$InitialDirectory
     )
 
     # Create the form
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "Select Folder"
+    $form.Text = $FormText
     $form.Width = 600
     $form.Height = 200
     $form.StartPosition = "CenterScreen"
@@ -234,7 +235,7 @@ elseif ($Mode -eq "FolderImages") {
     # Ask for input folder (images)
     $description = "Select folder containing image files"
     $initialDirectory = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyPictures)
-    $InputPath = Show-CustomFolderDialog -Description $description -InitialDirectory $initialDirectory
+    $InputPath = Show-CustomFolderDialog -FormText "Select Input Image Folder" -Description $description -InitialDirectory $initialDirectory
 
     if ($InputPath) {
         $desktopPath = $InputPath  # Store the selected path
@@ -253,7 +254,7 @@ elseif ($Mode -eq "FolderVideos") {
     # Ask for input folder (videos)
     $description = "Select folder containing video files"
     $initialDirectory = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::MyVideos)
-    $InputPath = Show-CustomFolderDialog -Description $description -InitialDirectory $initialDirectory
+    $InputPath = Show-CustomFolderDialog -FormText "Select Input Video Folder" -Description $description -InitialDirectory $initialDirectory
 
     if ($InputPath) {
         $desktopPath = $InputPath  # Store the selected path
@@ -270,16 +271,15 @@ elseif ($Mode -eq "FolderVideos") {
 }
 
 # Output
-if ([string]::IsNullOrEmpty($OutputPath)) {
-    $description = "Select OUTPUT folder for stretched files"
-    $initialDirectory = $desktopPath  # Use the last used desktop path
-    $OutputPath = Show-CustomFolderDialog -Description $description -InitialDirectory $initialDirectory
+$description = "Select OUTPUT folder for stretched files"
+$initialDirectory = $desktopPath  # Use the last used desktop path
+$OutputPath = Show-CustomFolderDialog -FormText "Select Output Folder" -Description $description -InitialDirectory $initialDirectory
 
-    if (!$OutputPath) {
-        Write-Host "No folder selected. Exiting."
-        exit
-    }
+if (!$OutputPath) {
+    Write-Host "No folder selected. Exiting."
+    exit
 }
+
 
 # HEEEEEEYYYYYYYYYY
 #HERE!!!! ITS HERE!!!!! HEY!!!!!! HERE!!! uuuuHHHHHHHHUUUUUOOOOOOOOOUUUUUUUUU <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
