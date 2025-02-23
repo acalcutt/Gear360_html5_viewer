@@ -1,4 +1,4 @@
-# HTML5 360° Video and Image Player
+# HTML5 360° Video and Image Viewer
 
 This project provides a web-based HTML5 player for displaying both 360° videos and images.  It utilizes a configuration file for customization and supports HLS (m3u8) and DASH (mpd) streaming formats, as well as static images (jpg, png).  The player leverages the Smarty templating engine for flexible presentation and Threejs for 3d rendering.
 
