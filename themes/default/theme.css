@@ -125,18 +125,6 @@ td {
 	display: block;
 }
 
-.map_default {
-	width: 100%;
-	height: 100%;
-	display: block;
-	pointer-events: auto;
-}
-
-.map_default.hidden {
-	display: none;
-	pointer-events: none;
-}
-
 .canvas_default {
 	width: 100%;
 	height: 100%;
@@ -147,13 +135,6 @@ td {
 
 .canvas_default.hidden {
 	display: none;
-}
-
-.maplibregl-map {
-    font: 12px / 20px Helvetica Neue, Arial, Helvetica, sans-serif;
-    overflow: hidden;
-    position: relative;
-    -webkit-tap-highlight-color: rgb(0 0 0 / 0);
 }
 
 #container {
@@ -319,14 +300,6 @@ td {
 }
 
 .view_controls.hidden {
-	display: none;
-}
-
-.file_controls {
-	position: relative;
-}
-
-.file_controls.hidden {
 	display: none;
 }
 
