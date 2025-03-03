@@ -79,7 +79,7 @@ function php_file_tree_dir($directory, $return_link, $extensions = array(), $exc
   $php_file_tree = "<ul id=\"".$id."\"";
   if( $first_call ) { $php_file_tree .= " class=\"php-file-tree\""; }
   $php_file_tree .= ">";
-  if( $first_call ) { $php_file_tree .= "<li class=\"pft-home\"><a href=\".\">Home</a></li>"; $first_call = false; }
+  if( $first_call ) { $php_file_tree .= "<li class=\"pft-home\"><a href=\".\">Home</a></li><li class=\"pft-map\"><a href=\"map.php\">Image Map</a></li>"; $first_call = false; }
   foreach( $file as $this_file ) {
    if( $this_file != "." && $this_file != ".." ) {
     if( is_dir("$directory/$this_file") ) {
